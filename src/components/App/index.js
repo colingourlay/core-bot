@@ -1,7 +1,7 @@
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import VisuallyHidden from '@reach/visually-hidden';
 import React, { useState } from 'react';
-import { useTransition, animated } from 'react-spring';
+import { useTransition, animated, config } from 'react-spring';
 import { useStyle } from 'styled-hooks';
 import Chat from '../Chat';
 import Icons from '../Icons';
@@ -11,9 +11,10 @@ const AnimatedDialogOverlay = animated(DialogOverlay);
 const AnimatedDialogContent = animated(DialogContent);
 
 const DIALOG_TRANSITION_STATES = {
-  from: { opacity: 0, transform: 'translate3d(0, -10px, 0)' },
+  config: config.stiff,
+  from: { opacity: 0, transform: 'translate3d(0, 1rem, 0)' },
   enter: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-  leave: { opacity: 0, transform: 'translate3d(0, 10px, 0)' }
+  leave: { opacity: 0, transform: 'translate3d(0, -1rem, 0)' }
 };
 
 export default function App({ articleId }) {
@@ -29,11 +30,20 @@ export default function App({ articleId }) {
     background: hsla(0, 0%, 0%, 0.75);
   `;
   const contentClassName = useStyle`
-    width: 50vw;
-    margin: 10vh auto;
-    background: white;
-    padding: 2rem;
+    position: fixed;
+    right: 0.75rem;
+    bottom: 4.25rem;
+    box-sizing: border-box;
+    margin: 0;
     outline: none;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    width: calc(100vw - 1.5rem);
+    max-width: 24rem;
+    height: calc(100vh - 5rem);
+    max-height: 36rem;
+    overflow: auto;
+    background: white;
   `;
 
   return (

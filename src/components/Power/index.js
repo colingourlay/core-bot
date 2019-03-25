@@ -6,11 +6,10 @@ export default function Power({ text, icon, action }) {
   const className = useStyle`
     display: inline-block;
     position: fixed;
-    right: 1rem;
-    bottom: 1rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
     margin: 0;
     border: 0;
-    /* border-radius: 50%; */
     border-radius: 0.25rem;
     padding: 0.25rem;
     background-color: #01cfff;
