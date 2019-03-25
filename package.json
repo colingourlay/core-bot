@@ -19,8 +19,11 @@
     "react-test-renderer": "^16.8.5"
   },
   "dependencies": {
+    "@reach/dialog": "^0.1.4",
+    "@reach/visually-hidden": "^0.1.2",
     "react": "^16.8.5",
     "react-dom": "^16.8.5",
+    "react-spring": "^8.0.18",
     "styled-hooks": "^1.5.2"
   }
 }
