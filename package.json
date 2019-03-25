@@ -1,0 +1,26 @@
+{
+  "name": "core-bot",
+  "version": "1.0.0-pre",
+  "description": "A project generated from aunty's react project template.",
+  "license": "MIT",
+  "private": true,
+  "contributors": [
+    "Colin Gourlay <Gourlay.Colin@abc.net.au>"
+  ],
+  "aunty": {
+    "type": "react"
+  },
+  "scripts": {
+    "start": "aunty serve",
+    "test": "aunty test"
+  },
+  "devDependencies": {
+    "@abcnews/aunty": "^10.3.1",
+    "react-test-renderer": "^16.8.5"
+  },
+  "dependencies": {
+    "react": "^16.8.5",
+    "react-dom": "^16.8.5",
+    "styled-hooks": "^1.5.2"
+  }
+}
