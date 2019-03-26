@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-
-const REM = parseFloat(getComputedStyle(document.documentElement).fontSize);
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 
 export function useIntrinsicWidth(ref) {
   const [width, setWidth] = useState('auto');
@@ -8,7 +6,7 @@ export function useIntrinsicWidth(ref) {
   useEffect(() => {
     const { width, height } = ref.current.getBoundingClientRect();
 
-    if (height < REM * 1.5) {
+    if (height < 24) {
       // Not multi-line
       return;
     }

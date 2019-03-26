@@ -15,7 +15,7 @@ export default function Chat() {
 
     & > [data-actor="host"] + [data-actor="guest"],
     & > [data-actor="guest"] + [data-actor="host"] {
-      margin-top: 0.5rem;
+      margin-top: 8px;
     }
   `;
 

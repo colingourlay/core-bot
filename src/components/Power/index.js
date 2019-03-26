@@ -6,20 +6,20 @@ export default function Power({ text, icon, action }) {
   const className = useStyle`
     display: inline-block;
     position: fixed;
-    right: 0.75rem;
-    bottom: 0.75rem;
+    right: 12px;
+    bottom: 12px;
     margin: 0;
     border: 0;
-    border-radius: 0.25rem;
-    padding: 0.25rem;
+    border-radius: 4px;
+    padding: 4px;
     background-color: #01cfff;
     color: #000;
     line-height: 1;
 
     svg {
-      width: 2rem;
-      min-width: 2rem;
-      height: 2rem;
+      width: 32px;
+      min-width: 32px;
+      height: 32px;
     }
   `;
 

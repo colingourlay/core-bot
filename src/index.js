@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
 
-const root = document.querySelector(`[data-core-bot-root]`);
+const root = document.querySelector(`a[name^="corebot"]`);
 
 function init() {
   render(<App />, root);

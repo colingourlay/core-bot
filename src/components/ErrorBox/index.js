@@ -10,7 +10,7 @@ export default function ErrorBox({ error }) {
     z-index: 10000;
     box-sizing: border-box;
     margin: 0;
-    padding: 2rem;
+    padding: 32px;
     width: 100vw;
     height: 100vh;
     background-color: #900;

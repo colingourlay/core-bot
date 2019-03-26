@@ -6,21 +6,23 @@ import { useStyle } from 'styled-hooks';
 import Chat from '../Chat';
 import Icons from '../Icons';
 import Power from '../Power';
+import ScrollLock from '../ScrollLock';
 
 const AnimatedDialogOverlay = animated(DialogOverlay);
 const AnimatedDialogContent = animated(DialogContent);
 
 const DIALOG_TRANSITION_STATES = {
   config: config.stiff,
-  from: { opacity: 0, transform: 'translate3d(0, 1rem, 0)' },
+  from: { opacity: 0, transform: 'translate3d(0, 16px, 0)' },
   enter: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-  leave: { opacity: 0, transform: 'translate3d(0, -1rem, 0)' }
+  leave: { opacity: 0, transform: 'translate3d(0, -16px, 0)' }
 };
 
 export default function App({ articleId }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const transitions = useTransition(isDialogOpen, null, DIALOG_TRANSITION_STATES);
   const overlayClassName = useStyle`
+    z-index: 10000;
     position: fixed;
     top: 0;
     right: 0;
@@ -31,17 +33,17 @@ export default function App({ articleId }) {
   `;
   const contentClassName = useStyle`
     position: fixed;
-    right: 0.75rem;
-    bottom: 4.25rem;
+    right: 12px;
+    bottom: 68px;
     box-sizing: border-box;
     margin: 0;
     outline: none;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    width: calc(100vw - 1.5rem);
-    max-width: 24rem;
-    height: calc(100vh - 5rem);
-    max-height: 36rem;
+    border-radius: 4px;
+    padding: 8px;
+    width: calc(100vw - 24px);
+    max-width: 384px;
+    height: calc(100vh - 80px);
+    max-height: 576px;
     overflow: auto;
     background: white;
   `;
@@ -62,6 +64,7 @@ export default function App({ articleId }) {
               style={{ opacity: props.opacity }}
               onDismiss={() => setIsDialogOpen(false)}
             >
+              <ScrollLock />
               <Power text="Close" icon="close" action={() => setIsDialogOpen(false)} />
               <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
                 <Chat />
