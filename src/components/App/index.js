@@ -49,6 +49,9 @@ export default function App({ articleId }) {
   return (
     <div>
       <Icons />
+      <button onClick={() => setIsDialogOpen(true)} style={{ fontFamily: 'ABCSans' }}>
+        Inline Opener
+      </button>
       <Power text="Open" icon="text-sms" action={() => setIsDialogOpen(true)} />
       {transitions.map(
         ({ item, key, props }) =>
