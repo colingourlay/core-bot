@@ -4,6 +4,7 @@ import { useStyle } from 'styled-hooks';
 
 export default function Power({ text, icon, action }) {
   const className = useStyle`
+    z-index: 9999;
     display: inline-block;
     position: fixed;
     right: 12px;
