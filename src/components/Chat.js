@@ -12,7 +12,7 @@ export default function Chat({ messages }) {
     overflow: scroll;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;margin-right: -32px;
-    padding: 100% 32px 0 0;
+    padding:192px 32px 0 0;
   `;
   const messagesClassName = useStyle`
     display: flex;
