@@ -1,9 +1,62 @@
 import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
+import { name } from '../package';
 
 const NEXT_PROPS = ['then', 'and', 'or'];
+const IS_DEBUG = String(window.location.host).indexOf('nucwed') > -1;
 
 function parseMessage(node) {
   return node.innerHTML;
+}
+
+function validateGraph(graph) {
+  const nodeIds = Object.keys(graph.nodes);
+  const nodesList = nodeIds.map(id => graph.nodes[id]);
+
+  // Log the graph
+  console.debug(graph);
+
+  // Ensure every node (except the start node) has:an action
+  nodesList.forEach(({ id, action }) => {
+    if (id !== graph.startId && !action) {
+      throw new Error(`Node #${id} does not have an action`);
+    }
+  });
+
+  // Ensure every node has at least one message
+  nodesList.forEach(({ id, messages }) => {
+    if (messages.length === 0) {
+      throw new Error(`Node #${id} must have at least one message`);
+    }
+  });
+
+  // Ensure there are no infinite loops
+  nodesList.forEach(({ id, next }) => {
+    if (next.indexOf(id) > -1) {
+      throw new Error(`Node #${id} links to itself`);
+    }
+  });
+
+  // Warn about unreachable nodes
+  nodesList.forEach(({ id }) => {
+    const references = nodesList.reduce((memo, node) => {
+      if (node.id !== id && node.next.indexOf(id) > -1) {
+        return memo.concat(node.id);
+      }
+
+      return memo;
+    }, []);
+
+    if (references === 0) {
+      console.warn(`Node #${id} unreachable`);
+    }
+  });
+
+  // Warn about dead-end nodes
+  nodesList.forEach(({ id, next }) => {
+    if (next.length === 0) {
+      console.warn(`Node #${id} is a dead-end`);
+    }
+  });
 }
 
 export function createGraph(markup) {
@@ -17,7 +70,7 @@ export function createGraph(markup) {
 
   [...doc.body.children].forEach(el => {
     if (el.tagName === 'A' && el.hasAttribute('name')) {
-      const [, id, propsString] = el.getAttribute('name').match(/([a-z]+)([A-Z].*)/) || [];
+      const [, id, propsString] = el.getAttribute('name').match(/([a-z]+)([A-Z].*)?/) || [];
 
       if (!id) {
         return;
@@ -28,7 +81,7 @@ export function createGraph(markup) {
         messages: []
       };
 
-      const stringProps = alternatingCaseToObject(propsString);
+      const stringProps = alternatingCaseToObject(propsString || '');
 
       currentNode.next = NEXT_PROPS.reduce((memo, prop) => {
         const value = stringProps[prop];
@@ -54,12 +107,23 @@ export function createGraph(markup) {
       return;
     }
 
-    if (typeof currentNode.action === 'undefined') {
+    if (typeof currentNode.action === 'undefined' && el.tagName.indexOf('H') === 0) {
       currentNode.action = el.textContent;
     } else {
       currentNode.messages.push(parseMessage(el));
     }
   });
+
+  if (IS_DEBUG) {
+    console.group(`[${name}] Validate Graph`);
+    try {
+      validateGraph(graph);
+    } catch (err) {
+      console.error(err);
+      alert(`[${name}] ${err.message}`);
+    }
+    console.groupEnd();
+  }
 
   return graph;
 }
