@@ -37,22 +37,25 @@ export function useChatHistory(graph) {
 }
 
 function getNextActions(node, graph) {
-  return node.next.reduce((memo, id) => memo.concat([{ id, action: graph.nodes[id].action }]), []);
+  return node.next.reduce(
+    (memo, id) => memo.concat(graph.nodes[id].actions.map(action => ({ id, markup: action }))),
+    []
+  );
 }
 
 export function useNextActions(graph, addMessages) {
   const startNode = graph.nodes[graph.startId];
   const [nextActions, setNextActions] = useState(getNextActions(startNode, graph));
 
-  function takeAction(id) {
-    addMessages([{ markup: graph.nodes[id].action, isGuest: true }]);
+  function takeAction(id, actionMessage) {
+    const guestMessage = { markup: actionMessage, isGuest: true };
+
+    addMessages([guestMessage]);
 
     setTimeout(() => {
       setNextActions(getNextActions(graph.nodes[id], graph));
 
-      addMessages(
-        [{ markup: graph.nodes[id].action, isGuest: true }].concat(graph.nodes[id].messages.map(markup => ({ markup })))
-      );
+      addMessages([guestMessage].concat(graph.nodes[id].messages.map(markup => ({ markup }))));
     }, 500);
   }
 

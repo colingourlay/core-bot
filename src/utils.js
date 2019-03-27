@@ -15,10 +15,10 @@ function validateGraph(graph) {
   // Log the graph
   console.debug(graph);
 
-  // Ensure every node (except the start node) has:an action
-  nodesList.forEach(({ id, action }) => {
-    if (id !== graph.startId && !action) {
-      throw new Error(`Node #${id} does not have an action`);
+  // Ensure every node (except the start node) has at least one action
+  nodesList.forEach(({ id, actions }) => {
+    if (id !== graph.startId && actions.length === 0) {
+      throw new Error(`Node #${id} must have at least one action`);
     }
   });
 
@@ -29,10 +29,19 @@ function validateGraph(graph) {
     }
   });
 
+  // Ensure every node referenced by another node exists
+  nodesList.forEach(({ id, next }) => {
+    next.forEach(nextId => {
+      if (!graph.nodes[nextId]) {
+        throw new Error(`Node #${id} references #${nextId}, which does not exist`);
+      }
+    });
+  });
+
   // Ensure there are no infinite loops
   nodesList.forEach(({ id, next }) => {
     if (next.indexOf(id) > -1) {
-      throw new Error(`Node #${id} links to itself`);
+      throw new Error(`Node #${id} creates an infinite loop`);
     }
   });
 
@@ -70,14 +79,21 @@ export function createGraph(markup) {
 
   [...doc.body.children].forEach(el => {
     if (el.tagName === 'A' && el.hasAttribute('name')) {
-      const [, id, propsString] = el.getAttribute('name').match(/([a-z]+)([A-Z].*)?/) || [];
+      const [, id, propsString] = el.getAttribute('name').match(/([a-z][a-z0-9]*)([A-Z].*)?/) || [];
 
       if (!id) {
         return;
       }
 
+      if (graph.nodes[id]) {
+        const err = new Error(`Node #${id} is already defined`);
+        alert(`[${name}] ${err.message}`);
+        throw err;
+      }
+
       currentNode = {
         id,
+        actions: [],
         messages: []
       };
 
@@ -97,7 +113,6 @@ export function createGraph(markup) {
 
       if (!graph.startId) {
         graph.startId = id;
-        currentNode.action = null;
       }
 
       return;
@@ -107,8 +122,8 @@ export function createGraph(markup) {
       return;
     }
 
-    if (typeof currentNode.action === 'undefined' && el.tagName.indexOf('H') === 0) {
-      currentNode.action = el.textContent;
+    if (el.tagName.indexOf('H') === 0) {
+      currentNode.actions.push(el.innerHTML);
     } else {
       currentNode.messages.push(parseMessage(el));
     }

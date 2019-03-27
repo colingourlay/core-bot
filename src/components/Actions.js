@@ -49,15 +49,14 @@ export default function Actions({ actions, takeAction }) {
 
   return (
     <div key={ids} className={className}>
-      {actions.map(({ id, action }, index) => (
+      {actions.map(({ id, markup }, index) => (
         <button
-          key={`${id}-of-${ids}`}
+          key={`${index}-of-${ids}`}
           style={{ animationDelay: `${0.25 + index * 0.125}s` }}
           className={actionClassName}
-          onClick={() => takeAction(id)}
-        >
-          {action}
-        </button>
+          onClick={() => takeAction(id, markup)}
+          dangerouslySetInnerHTML={{ __html: markup }}
+        />
       ))}
     </div>
   );
