@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import { useIntrinsicWidth } from '../../hooks';
 
-export default function Bubble({ bg, isGuest = false, children, ...props }) {
+export default function Message({ markup, isGuest = false, ...props }) {
   const spanRef = useRef();
   const spanWidth = useIntrinsicWidth(spanRef);
   const className = useStyle`
@@ -13,12 +13,15 @@ export default function Bubble({ bg, isGuest = false, children, ...props }) {
     padding: 8px 12px;
     max-width: 66%;
     background-color: ${isGuest ? '#01cfff' : '#eee'};
+    color: black;
+    font-family: ABCSans;
     font-size: 16px;
+    word-wrap: break-word;
   `;
 
   return (
-    <div className={className} data-actor={isGuest ? 'guest' : 'host'} {...props} style={{ width: spanWidth }}>
-      <span ref={spanRef}>{children}</span>
+    <div className={className} data-actor={isGuest ? 'guest' : 'host'} style={{ width: spanWidth }} {...props}>
+      <span ref={spanRef} dangerouslySetInnerHTML={{ __html: markup }} />
     </div>
   );
 }

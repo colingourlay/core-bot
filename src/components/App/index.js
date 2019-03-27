@@ -3,10 +3,12 @@ import VisuallyHidden from '@reach/visually-hidden';
 import React, { useState } from 'react';
 import { useTransition, animated, config } from 'react-spring';
 import { useStyle } from 'styled-hooks';
+import Actions from '../Actions';
 import Chat from '../Chat';
 import Icons from '../Icons';
 import Power from '../Power';
 import ScrollLock from '../ScrollLock';
+import { useChatHistory, useNextActions } from '../../hooks';
 
 const AnimatedDialogOverlay = animated(DialogOverlay);
 const AnimatedDialogContent = animated(DialogContent);
@@ -18,8 +20,10 @@ const DIALOG_TRANSITION_STATES = {
   leave: { opacity: 0, transform: 'translate3d(0, -16px, 0)' }
 };
 
-export default function App({ articleId }) {
+export default function App({ graph }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [chatHistory, addMessages] = useChatHistory(graph);
+  const [nextActions, takeAction] = useNextActions(graph, addMessages);
   const transitions = useTransition(isDialogOpen, null, DIALOG_TRANSITION_STATES);
   const overlayClassName = useStyle`
     z-index: 10000;
@@ -35,16 +39,18 @@ export default function App({ articleId }) {
     position: fixed;
     right: 12px;
     bottom: 68px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     box-sizing: border-box;
+    overflow: hidden;
     margin: 0;
     outline: none;
     border-radius: 4px;
-    padding: 8px;
     width: calc(100vw - 24px);
     max-width: 384px;
     height: calc(100vh - 80px);
     max-height: 576px;
-    overflow: auto;
     background: white;
   `;
 
@@ -67,7 +73,8 @@ export default function App({ articleId }) {
               <ScrollLock />
               <Power text="Close" icon="close" action={() => setIsDialogOpen(false)} />
               <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
-                <Chat />
+                <Chat messages={chatHistory} />
+                <Actions actions={nextActions} takeAction={takeAction} />
               </AnimatedDialogContent>
             </AnimatedDialogOverlay>
           )
