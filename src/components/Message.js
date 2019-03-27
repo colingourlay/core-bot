@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
-import { useIntrinsicWidth } from '../../hooks';
+import { useIntrinsicWidth } from '../hooks';
 
 export default function Message({ markup, isGuest = false, ...props }) {
   const spanRef = useRef();

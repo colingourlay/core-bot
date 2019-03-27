@@ -3,12 +3,12 @@ import VisuallyHidden from '@reach/visually-hidden';
 import React, { useState } from 'react';
 import { useTransition, animated, config } from 'react-spring';
 import { useStyle } from 'styled-hooks';
-import Actions from '../Actions';
-import Chat from '../Chat';
-import Icons from '../Icons';
-import Power from '../Power';
-import ScrollLock from '../ScrollLock';
-import { useChatHistory, useNextActions } from '../../hooks';
+import Actions from './Actions';
+import Chat from './Chat';
+import Icons from './Icons';
+import Power from './Power';
+import ScrollLock from './ScrollLock';
+import { useChatHistory, useNextActions } from '../hooks';
 
 const AnimatedDialogOverlay = animated(DialogOverlay);
 const AnimatedDialogContent = animated(DialogContent);

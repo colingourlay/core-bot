@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useStyle } from 'styled-hooks';
-import Message from '../Message';
+import Message from './Message';
 
 const IS_SMOOTH_SCROLL_SUPPORTED = 'scrollBehavior' in document.documentElement.style;
 const SCROLL_INTO_VIEW_ARG = IS_SMOOTH_SCROLL_SUPPORTED

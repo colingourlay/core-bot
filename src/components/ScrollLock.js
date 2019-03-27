@@ -1,6 +1,6 @@
 import VisuallyHidden from '@reach/visually-hidden';
 import React from 'react';
-import { useLockBodyScroll } from '../../hooks';
+import { useLockBodyScroll } from '../hooks';
 
 export default function ScrollLock() {
   useLockBodyScroll();
