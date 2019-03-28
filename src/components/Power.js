@@ -1,6 +1,7 @@
 import VisuallyHidden from '@reach/visually-hidden';
 import React from 'react';
 import { useStyle } from 'styled-hooks';
+import { useContext, OPEN_DIALOG_ACTION } from '../state';
 
 const PATHS = {
   ON:
@@ -12,7 +13,9 @@ const PATHS = {
 let nextId = 0;
 
 export default function Power({ isOn, onClick }) {
+  const { state } = useContext();
   const className = useStyle`
+    opacity: ${!isOn && state.isDialogOpen ? 0 : 1};
     z-index: 9999;
     display: inline-block;
     position: fixed;
@@ -27,6 +30,7 @@ export default function Power({ isOn, onClick }) {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.4);
     color: #000;
+    transition: opacity .25s;
 
     label {
       position: absolute;
@@ -42,6 +46,7 @@ export default function Power({ isOn, onClick }) {
       line-height: 1;
       letter-spacing: 1px;
       white-space: nowrap;
+      transition: opacity .25s;
     }
   `;
   const id = `${className.replace(' ', '')}${nextId++}`;
