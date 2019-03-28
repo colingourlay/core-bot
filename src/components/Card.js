@@ -14,7 +14,7 @@ export default function Card({ text, icon, action }) {
   `;
 
   const innerClassName = useStyle`
-    padding: 25px 15px 15px;
+    padding: 26px 15px 18px;
     background-color: #DDE7EB;
 
     h3 {
