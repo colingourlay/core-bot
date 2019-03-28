@@ -27,7 +27,7 @@ export default function Dialog({ children }) {
     bottom: 0;
     left: 0;
     overflow: auto;
-    background: hsla(0, 0%, 0%, 0.75);
+    background: rgba(0, 18, 26, 0.8);
   `;
   const contentClassName = useStyle`
     position: fixed;
@@ -60,7 +60,7 @@ export default function Dialog({ children }) {
               onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}
             >
               <ScrollLock />
-              <Power text="Close" icon="close" action={() => dispatch(CLOSE_DIALOG_ACTION)} />
+              <Power onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
               <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
                 {children()}
               </AnimatedDialogContent>
