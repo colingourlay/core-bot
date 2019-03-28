@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useStyle } from 'styled-hooks';
+import { useContext, ACTION_TYPES } from '../state';
 
-export default function Actions({ actions, takeAction }) {
+export default function Input() {
+  const { state, dispatch } = useContext();
+  const { prompts } = state;
+
   const className = useStyle`
     padding: 0 8px;
     background-color: #eee;
@@ -45,16 +49,16 @@ export default function Actions({ actions, takeAction }) {
     }
   `;
 
-  const ids = actions.map(({ id }) => id).join('_');
+  const key = prompts.map(({ id }) => id).join('_');
 
   return (
-    <div key={ids} className={className}>
-      {actions.map(({ id, markup }, index) => (
+    <div key={key} className={className}>
+      {prompts.map(({ targetNodeId, markup }, index) => (
         <button
-          key={`${index}-of-${ids}`}
+          key={`${index}-of-${key}`}
           style={{ animationDelay: `${0.25 + index * 0.125}s` }}
           className={actionClassName}
-          onClick={() => takeAction(id, markup)}
+          onClick={() => dispatch({ type: ACTION_TYPES.CHOOSE_PROMPT, data: { targetNodeId, markup, dispatch } })}
           dangerouslySetInnerHTML={{ __html: markup }}
         />
       ))}

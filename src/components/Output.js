@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
+import { useContext } from '../state';
 import Message from './Message';
 
 const IS_SMOOTH_SCROLL_SUPPORTED = 'scrollBehavior' in document.documentElement.style;
@@ -7,7 +8,10 @@ const SCROLL_INTO_VIEW_ARG = IS_SMOOTH_SCROLL_SUPPORTED
   ? { behavior: 'smooth', block: 'end', inline: 'nearest' }
   : false;
 
-export default function Chat({ messages }) {
+export default function Output() {
+  const { state } = useContext();
+  const ref = useRef();
+  const bottomRef = useRef();
   const className = useStyle`
     overflow: scroll;
     overflow-x: hidden;
@@ -27,16 +31,12 @@ export default function Chat({ messages }) {
     }
   `;
 
-  const ref = useRef();
-
   useEffect(() => {
     // Start scrolled to the bottom when initially mounted
     if (ref.current) {
       ref.current.scrollTop = ref.current.scrollHeight;
     }
   }, []);
-
-  const bottomRef = useRef();
 
   useEffect(() => {
     // Scroll to at bottom (animated if possible) when messages are added
@@ -45,12 +45,12 @@ export default function Chat({ messages }) {
         bottomRef.current.scrollIntoView(SCROLL_INTO_VIEW_ARG);
       }, 250);
     }
-  }, [messages.length]);
+  }, [state.history.length, state.prompts.length]);
 
   return (
     <div ref={ref} className={className}>
       <div className={messagesClassName}>
-        {messages.map((props, index) => (
+        {state.history.map((props, index) => (
           <Message key={index} {...props} />
         ))}
       </div>

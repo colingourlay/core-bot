@@ -15,17 +15,17 @@ function validateGraph(graph) {
   // Log the graph
   console.debug(graph);
 
-  // Ensure every node (except the start node) has at least one action
-  nodesList.forEach(({ id, actions }) => {
-    if (id !== graph.startId && actions.length === 0) {
-      throw new Error(`Node #${id} must have at least one action`);
+  // Ensure every node (except the start node) has at least one prompt
+  nodesList.forEach(({ id, prompts }) => {
+    if (id !== graph.startId && prompts.length === 0) {
+      throw new Error(`"${id}" must have at least one prompt`);
     }
   });
 
-  // Ensure every node has at least one message
-  nodesList.forEach(({ id, messages }) => {
-    if (messages.length === 0) {
-      throw new Error(`Node #${id} must have at least one message`);
+  // Ensure every node has at least one note
+  nodesList.forEach(({ id, notes }) => {
+    if (notes.length === 0) {
+      throw new Error(`"${id}" must have at least one note`);
     }
   });
 
@@ -33,7 +33,7 @@ function validateGraph(graph) {
   nodesList.forEach(({ id, next }) => {
     next.forEach(nextId => {
       if (!graph.nodes[nextId]) {
-        throw new Error(`Node #${id} references #${nextId}, which does not exist`);
+        throw new Error(`"${id}" references "${nextId}", which does not exist`);
       }
     });
   });
@@ -41,7 +41,7 @@ function validateGraph(graph) {
   // Ensure there are no infinite loops
   nodesList.forEach(({ id, next }) => {
     if (next.indexOf(id) > -1) {
-      throw new Error(`Node #${id} creates an infinite loop`);
+      throw new Error(`"${id}" creates an infinite loop`);
     }
   });
 
@@ -56,14 +56,14 @@ function validateGraph(graph) {
     }, []);
 
     if (references === 0) {
-      console.warn(`Node #${id} unreachable`);
+      console.warn(`"${id}" is unreachable`);
     }
   });
 
   // Warn about dead-end nodes
   nodesList.forEach(({ id, next }) => {
     if (next.length === 0) {
-      console.warn(`Node #${id} is a dead-end`);
+      console.warn(`"${id}" is a dead-end`);
     }
   });
 }
@@ -86,15 +86,15 @@ export function createGraph(markup) {
       }
 
       if (graph.nodes[id]) {
-        const err = new Error(`Node #${id} is already defined`);
+        const err = new Error(`"${id}" is already defined`);
         alert(`[${name}] ${err.message}`);
         throw err;
       }
 
       currentNode = {
         id,
-        actions: [],
-        messages: []
+        notes: [],
+        prompts: []
       };
 
       const stringProps = alternatingCaseToObject(propsString || '');
@@ -123,9 +123,9 @@ export function createGraph(markup) {
     }
 
     if (el.tagName.indexOf('H') === 0) {
-      currentNode.actions.push(el.innerHTML);
+      currentNode.prompts.push(el.innerHTML);
     } else {
-      currentNode.messages.push(parseMessage(el));
+      currentNode.notes.push(parseMessage(el));
     }
   });
 
