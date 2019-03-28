@@ -66,7 +66,7 @@ export default function Card({ text, icon, action }) {
         <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>Ask the ABC&nbsp;News&nbsp;Bot</button>
       </div>
       <svg className={iconClassName} xmlns="http://www.w3.org/2000/svg" width="30" height="29" aria-hidden>
-        <path fill-rule="evenodd" d="M30 18v11l-9-9H5a5 5 0 0 1-5-5V2a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v16z" />
+        <path d="M30 18v11l-9-9H5a5 5 0 0 1-5-5V2a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v16z" />
       </svg>
     </div>
   );
