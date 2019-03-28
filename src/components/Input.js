@@ -25,7 +25,7 @@ export default function Input() {
     }
   `;
 
-  const actionClassName = useStyle`
+  const promptClassName = useStyle`
     display: block;
     margin: 8px 0 8px auto;
     border: 0;
@@ -35,6 +35,7 @@ export default function Input() {
     color: #000;
     font-family: ABCSans;
     font-size: 16px;
+    font-weight: 300;
     transition: opacity .5s, transform .5s;
     animation: promptEnter 0.75s backwards;
 
@@ -70,7 +71,7 @@ export default function Input() {
         <button
           key={`${index}-of-${key}`}
           style={{ animationDelay: `${0.25 + index * 0.125}s` }}
-          className={actionClassName}
+          className={promptClassName}
           onClick={() => dispatch({ type: ACTION_TYPES.CHOOSE_PROMPT, data: { targetNodeId, markup, dispatch } })}
           dangerouslySetInnerHTML={{ __html: markup }}
         />

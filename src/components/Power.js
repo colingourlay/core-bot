@@ -38,7 +38,7 @@ export default function Power({ isOn, onClick }) {
       box-shadow: inherit;
       font-family: ABCSans;
       font-size: 11px;
-      font-weight: bold;
+      font-weight: 600;
       line-height: 1;
       letter-spacing: 1px;
       white-space: nowrap;

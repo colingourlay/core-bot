@@ -16,6 +16,7 @@ export default function Message({ markup, isGuest = false, ...props }) {
     color: black;
     font-family: ABCSans;
     font-size: 16px;
+    font-weight: 300;
     
     & a {
       color: #0058cc;
