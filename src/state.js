@@ -68,19 +68,20 @@ function reducer(state, action) {
   }
 }
 
-function getInitialState(graph) {
+function getInitialState(props) {
+  const { graph } = props;
   const startNode = graph.nodes[graph.startId];
 
   return {
-    graph,
+    ...props,
     history: startNode.notes.map(message => ({ markup: message })),
     isDialogOpen: false,
     prompts: getNextPrompts(startNode, graph)
   };
 }
 
-export function useReducer(graph) {
-  const [state, dispatch] = React.useReducer(reducer, getInitialState(graph));
+export function useReducer(props) {
+  const [state, dispatch] = React.useReducer(reducer, getInitialState(props));
 
   return { state, dispatch };
 }

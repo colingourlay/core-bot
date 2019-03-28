@@ -72,8 +72,8 @@ export function createGraph(markup) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(markup, 'text/html');
   const graph = {
-    startId: null,
-    nodes: {}
+    nodes: {},
+    startId: null
   };
   let currentNode = null;
 

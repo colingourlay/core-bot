@@ -3,6 +3,8 @@ import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
 import { createGraph } from './utils';
+import { DialogOverlay } from '@reach/dialog';
+import './global.css';
 
 const root = document.querySelector(`a[name^="corebot"]`);
 const [, coreBotId, coreBotPropsString] = root.getAttribute('name').match(/corebot(\d+)(.*)/) || [];
@@ -11,10 +13,10 @@ if (!coreBotId) {
   throw new Error('No Core Bot ID found');
 }
 
-let graph;
+let appProps;
 
 function init() {
-  render(<App graph={graph} />, root);
+  render(<App {...appProps} />, root);
 }
 
 capiFetch(coreBotId, (err, doc) => {
@@ -26,7 +28,7 @@ capiFetch(coreBotId, (err, doc) => {
     throw new Error(`Core Bot script has no text`);
   }
 
-  graph = createGraph(doc.text);
+  appProps = { graph: createGraph(doc.text), title: doc.title };
 
   init();
 });
