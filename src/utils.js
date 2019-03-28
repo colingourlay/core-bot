@@ -130,7 +130,7 @@ export function createGraph(markup) {
   });
 
   if (IS_DEBUG) {
-    console.group(`[${name}] Validate Graph`);
+    console.groupCollapsed(`[${name}] Validate Graph`);
     try {
       validateGraph(graph);
     } catch (err) {
