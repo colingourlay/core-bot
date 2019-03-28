@@ -60,7 +60,7 @@ export default function Dialog({ children }) {
               onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}
             >
               <ScrollLock />
-              <Power onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
+              <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
               <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
                 {children()}
               </AnimatedDialogContent>

@@ -9,11 +9,12 @@ const PATHS = {
     'M31.928 26.2H32v8.067l-6.6-6.6H13a3 3 0 0 1-3-3V15a2 2 0 0 1 2-2h18a2 2 0 0 1 2 2v10.667c0 .184-.025.363-.072.533z'
 };
 
+let nextId = 0;
+
 export default function Power({ isOn, onClick }) {
   const className = useStyle`
     z-index: 9999;
     display: inline-block;
-    overflow: hidden;
     position: fixed;
     right: 12px;
     bottom: 12px;
@@ -26,14 +27,35 @@ export default function Power({ isOn, onClick }) {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.4);
     color: #000;
+
+    label {
+      position: absolute;
+      top: 12px;
+      right: 50px;
+      border-radius: 16px;
+      padding: 5px 10px 4px;
+      background-color: inherit;
+      box-shadow: inherit;
+      font-family: ABCSans;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 1;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
   `;
+  const id = `${className.replace(' ', '')}${nextId++}`;
 
   return (
-    <button className={className} onClick={onClick}>
+    <button id={id} className={className} onClick={onClick}>
       <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" aria-hidden>
         <path d={isOn ? PATHS.ON : PATHS.OFF} />
       </svg>
-      <VisuallyHidden>{`${isOn ? 'Close' : 'Open'} the ABC News Bot`}</VisuallyHidden>
+      {isOn ? (
+        <VisuallyHidden>{'Close the ABC News Bot'}</VisuallyHidden>
+      ) : (
+        <label htmlFor={id}>Ask the ABC News Bot</label>
+      )}
     </button>
   );
 }
