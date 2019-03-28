@@ -3,11 +3,17 @@ import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
 import { createGraph } from './utils';
-import { DialogOverlay } from '@reach/dialog';
 import './global.css';
 
+let fetch = capiFetch;
+
+// DEBUG ONLY
+if (__corebot__) {
+  fetch = (_, done) => done(null, __corebot__);
+}
+
 const root = document.querySelector(`a[name^="corebot"]`);
-const [, coreBotId, coreBotPropsString] = root.getAttribute('name').match(/corebot(\d+)(.*)/) || [];
+const [, coreBotId] = root.getAttribute('name').match(/corebot(\d+)?/) || [];
 
 if (!coreBotId) {
   throw new Error('No Core Bot ID found');
@@ -19,7 +25,7 @@ function init() {
   render(<App {...appProps} />, root);
 }
 
-capiFetch(coreBotId, (err, doc) => {
+fetch(coreBotId, (err, doc) => {
   if (err) {
     throw new Error(`Couldn't fetch Core Bot script`);
   }
