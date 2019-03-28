@@ -41,9 +41,7 @@ export default function Output() {
   useEffect(() => {
     // Scroll to at bottom (animated if possible) when messages are added
     if (bottomRef.current) {
-      setTimeout(() => {
-        bottomRef.current.scrollIntoView(SCROLL_INTO_VIEW_ARG);
-      }, 250);
+      bottomRef.current.scrollIntoView(SCROLL_INTO_VIEW_ARG);
     }
   }, [state.history.length, state.prompts.length]);
 

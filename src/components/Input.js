@@ -10,6 +10,19 @@ export default function Input() {
     padding: 0 8px;
     background-color: #eee;
     box-shadow: inset 0 4px 4px -2px rgba(0,0,0,0.25);
+
+    &:not(:empty) {
+      animation: inputEnter 0.25s backwards;
+    }
+
+    @keyframes inputEnter {
+      from {
+        transform: translate(0, 100%);
+      }
+      to {
+        transform: none;
+      }
+    }
   `;
 
   const actionClassName = useStyle`
@@ -23,9 +36,9 @@ export default function Input() {
     font-family: ABCSans;
     font-size: 16px;
     transition: opacity .5s, transform .5s;
-    animation: actionEnter 0.75s backwards;
+    animation: promptEnter 0.75s backwards;
 
-    @keyframes actionEnter {
+    @keyframes promptEnter {
       from {
         opacity: 0;
         transform: translate(12px, 0);
