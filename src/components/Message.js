@@ -61,7 +61,12 @@ export default function Message({ markup, isGuest = false, /*sink*/ children, ..
 `;
 
   return (
-    <div className={className} data-actor={isGuest ? 'guest' : 'host'} {...props}>
+    <div
+      className={className}
+      data-actor={isGuest ? 'guest' : 'host'}
+      data-sketch-symbol={`Message/${isGuest ? 'Guest' : 'Host'}`}
+      {...props}
+    >
       <div className={contentClassName} dangerouslySetInnerHTML={{ __html: markup }} />
     </div>
   );

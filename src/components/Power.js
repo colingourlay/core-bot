@@ -62,7 +62,7 @@ export default function Power({ isOn, onClick }) {
   const id = `${className.replace(' ', '')}${nextId++}`;
 
   return (
-    <button id={id} className={className} onClick={onClick}>
+    <button id={id} className={className} onClick={onClick} data-sketch-symbol={`Power/${isOn ? 'On' : 'Off'}`}>
       <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" aria-hidden>
         <path d={isOn ? PATHS.ON : PATHS.OFF} />
       </svg>

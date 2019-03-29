@@ -46,7 +46,7 @@ export default function Output() {
   }, [state.history.length, state.prompts.length]);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} data-sketch-symbol="Output">
       <div className={messagesClassName}>
         {state.history.map((props, index) => (
           <Message key={index} {...props} />

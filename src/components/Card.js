@@ -76,7 +76,7 @@ export default function Card({ text, icon, action }) {
   )}`;
 
   return (
-    <div className={className}>
+    <div className={className} data-sketch-symbol="Card">
       <div className={innerClassName}>
         <VisuallyHidden>ABC News Chat Bot</VisuallyHidden>
         <h3>{titleText}</h3>

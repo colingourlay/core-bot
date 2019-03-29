@@ -4,6 +4,7 @@
 # output
 /.build
 /.deploy
+/sketch
 
 # misc
 .DS_Store

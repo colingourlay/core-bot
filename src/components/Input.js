@@ -69,7 +69,7 @@ export default function Input() {
   const key = prompts.map(({ id }) => id).join('_');
 
   return (
-    <div key={key} className={className}>
+    <div key={key} className={className} data-sketch-symbol="Input">
       {prompts.map(({ targetNodeId, markup }, index) => (
         <button
           key={`${index}-of-${key}`}
