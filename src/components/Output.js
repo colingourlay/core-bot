@@ -1,3 +1,4 @@
+import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
 import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import { useContext } from '../state';
@@ -26,10 +27,15 @@ export default function Output() {
   `;
 
   useEffect(() => {
-    // Start scrolled to the bottom when initially mounted
     if (ref.current) {
+      // Start scrolled to the bottom when initially mounted
       ref.current.scrollTop = ref.current.scrollHeight;
+      // Stop body from scrolling (helping the Dialog out a bit here)
+      disableBodyScroll(ref.current);
     }
+
+    // Enable body scrolling ro resume on un-mount;
+    return clearAllBodyScrollLocks;
   }, []);
 
   useEffect(() => {

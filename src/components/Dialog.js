@@ -4,7 +4,6 @@ import { useTransition, animated, config } from 'react-spring';
 import { useStyle } from 'styled-hooks';
 import { useContext, CLOSE_DIALOG_ACTION } from '../state';
 import Power from './Power';
-import ScrollLock from './ScrollLock';
 
 const DIALOG_TRANSITION_STATES = {
   config: config.stiff,
@@ -69,7 +68,6 @@ export default function Dialog({ children }) {
               style={{ opacity: props.opacity }}
               onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}
             >
-              <ScrollLock />
               <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
               <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
                 {children()}
