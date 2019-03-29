@@ -23,12 +23,6 @@ export default function Output() {
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-start;
-    padding: 8px;
-
-    & > [data-actor="host"] + [data-actor="guest"],
-    & > [data-actor="guest"] + [data-actor="host"] {
-      margin-top: 8px;
-    }
   `;
 
   useEffect(() => {

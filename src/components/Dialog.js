@@ -39,13 +39,23 @@ export default function Dialog({ children }) {
     box-sizing: border-box;
     overflow: hidden;
     margin: 0;
-    outline: none;
-    border-radius: 4px;
     width: calc(100vw - 24px);
     max-width: 384px;
     height: calc(100vh - 80px);
     max-height: 576px;
-    background: white;
+    background: rgb(237, 241, 242);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-image: linear-gradient(to bottom, rgba(237, 241, 242, 1), rgba(237, 241, 242, 0));
+      pointer-events: none;
+    }
   `;
 
   return (

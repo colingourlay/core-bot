@@ -52,6 +52,12 @@ export default function Power({ isOn, onClick }) {
       white-space: nowrap;
       transition: opacity .25s;
     }
+
+    span {
+      position: absolute;
+      top: 50%;
+      right: 50%;
+    }
   `;
   const id = `${className.replace(' ', '')}${nextId++}`;
 

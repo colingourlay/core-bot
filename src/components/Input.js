@@ -27,22 +27,25 @@ export default function Input() {
 
   const promptClassName = useStyle`
     display: block;
-    margin: 8px 0 8px auto;
+    margin: 8px 0;
     border: 0;
     border-radius: 4px;
-    padding: 8px 12px;
-    background-color: #01cfff;
-    color: #000;
+    padding: 10px 15px;
+    width: 100%;
+    background-color: #000;
+    color: #fff;
     font-family: ABCSans;
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 15px;
+    text-align: left;
+    line-height: 1.5;
+    letter-spacing: 0.25px;
     transition: opacity .5s, transform .5s;
     animation: promptEnter 0.75s backwards;
 
     @keyframes promptEnter {
       from {
         opacity: 0;
-        transform: translate(12px, 0);
+        transform: translate(0, 20px);
       }
       to {
         transform: none;

@@ -1,9 +1,14 @@
 import VisuallyHidden from '@reach/visually-hidden';
-import React from 'react';
-import { useLockBodyScroll } from '../hooks';
+import React, { useLayoutEffect } from 'react';
+
+const MESSAGE = 'An ABC News Chat Bot dialog is currently open, which stops the page from scrolling';
 
 export default function ScrollLock() {
-  useLockBodyScroll();
+  useLayoutEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = 'hidden';
+    return () => (document.body.style.overflow = originalStyle);
+  }, []);
 
-  return <VisuallyHidden>A modal chat is currently open, which stops the page from scrolling</VisuallyHidden>;
+  return <VisuallyHidden>{MESSAGE}</VisuallyHidden>;
 }
