@@ -30,7 +30,11 @@ export default function Power({ isOn, onClick }) {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.4);
     color: #000;
-    transition: opacity .25s;
+    transition: opacity 0.25s, transform 0.5s;
+
+    .is-over-footer & {
+      transform: translate(0, 150%);
+    }
 
     label {
       position: absolute;

@@ -8,12 +8,12 @@ import './global.css';
 let fetch = capiFetch;
 
 // DEBUG ONLY
-if (__corebot__) {
+if (window.__corebot__) {
   fetch = (_, done) => done(null, __corebot__);
 }
 
-const root = document.querySelector(`a[name^="corebot"]`);
-const [, coreBotId] = root.getAttribute('name').match(/corebot(\d+)?/) || [];
+const rootEl = document.querySelector('a[name^="corebot"]');
+const [, coreBotId] = rootEl.getAttribute('name').match(/corebot(\d+)?/) || [];
 
 if (!coreBotId) {
   throw new Error('No Core Bot ID found');
@@ -22,7 +22,7 @@ if (!coreBotId) {
 let appProps;
 
 function init() {
-  render(<App {...appProps} />, root);
+  render(<App {...appProps} />, rootEl);
 }
 
 fetch(coreBotId, (err, doc) => {
@@ -38,6 +38,21 @@ fetch(coreBotId, (err, doc) => {
 
   init();
 });
+
+const footerEl = document.querySelectorAll('nav.global')[1];
+
+if (footerEl && window.IntersectionObserver) {
+  new IntersectionObserver(
+    entries => {
+      rootEl.classList[entries[0].isIntersecting ? 'add' : 'remove']('is-over-footer');
+    },
+    {
+      root: null,
+      rootMargin: '10%',
+      threshold: 0
+    }
+  ).observe(footerEl);
+}
 
 if (module.hot) {
   module.hot.accept('./components/App', () => {
