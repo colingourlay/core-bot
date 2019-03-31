@@ -1,6 +1,7 @@
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import React, { Fragment } from 'react';
 import { useTransition, animated, config } from 'react-spring';
+import useViewportSize from 'react-hook-viewport-size';
 import { useStyle } from 'styled-hooks';
 import { useContext, CLOSE_DIALOG_ACTION } from '../state';
 import Power from './Power';
@@ -17,6 +18,7 @@ const AnimatedDialogContent = animated(DialogContent);
 
 export default function Dialog({ children }) {
   const { state, dispatch } = useContext();
+  const [, viewportHeight] = useViewportSize();
   const transitions = useTransition(state.isDialogOpen, null, DIALOG_TRANSITION_STATES);
   const overlayClassName = useStyle`
     z-index: 10000;
@@ -40,7 +42,7 @@ export default function Dialog({ children }) {
     margin: 0;
     width: calc(100vw - 24px);
     max-width: 384px;
-    height: calc(100vh - 80px);
+    height: ${viewportHeight - 80}px;
     max-height: 576px;
     background: rgb(237, 241, 242);
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
