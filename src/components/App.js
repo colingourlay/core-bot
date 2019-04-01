@@ -3,8 +3,7 @@ import { useStyle } from 'styled-hooks';
 import { Provider, useReducer, OPEN_DIALOG_ACTION } from '../state';
 import Card from './Card';
 import Dialog from './Dialog';
-import Input from './Input';
-import Output from './Output';
+import Chat from './Chat';
 import Power from './Power';
 
 export default function App(props) {
@@ -15,7 +14,7 @@ export default function App(props) {
       <div>
         <Card />
         <Power onClick={() => dispatch(OPEN_DIALOG_ACTION)} />
-        <Dialog>{() => [<Output key="output" />, <Input key="input" />]}</Dialog>
+        <Dialog>{() => <Chat />}</Dialog>
       </div>
     </Provider>
   );

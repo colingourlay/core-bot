@@ -20,7 +20,7 @@ export default function Card({ text, icon, action }) {
     background-color: #DDE7EB;
 
     @media (min-width: 360px) {
-      padding: 26px 15px 18px;
+      padding: 26px 16px 18px;
     }
 
     h3 {
@@ -50,14 +50,14 @@ export default function Card({ text, icon, action }) {
       color: #fff;
       font-family: ABCSans;
       font-size: 12px;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.4;
       text-align: left;
       text-transform: uppercase;
       letter-spacing: 1px;
 
       @media (min-width: 360px) {
-        padding: 10px 15px;
+        padding: 10px 16px;
       }
     }
   `;

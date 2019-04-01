@@ -48,9 +48,9 @@ function reducer(state, action) {
     case ACTION_TYPES.UPDATE_PROMPTS:
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
-      const { targetNodeId, markup, dispatch } = action.data;
+      const { targetNodeId, markup, box, parentBox, dispatch } = action.data;
       const targetNode = state.graph.nodes[targetNodeId];
-      const nextGuestMessage = { markup, isGuest: true };
+      const nextGuestMessage = { markup, isGuest: true, box, parentBox };
       const nextHostMessages = getNextHostMessages(targetNode, state.graph);
       const nextPrompts = getNextPrompts(targetNode, state.graph);
       const messageInterval = setInterval(() => {

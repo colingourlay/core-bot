@@ -33,6 +33,8 @@
 		"react-dom": "^16.8.5",
 		"react-hook-viewport-size": "^1.0.0",
 		"react-spring": "^8.0.18",
-		"styled-hooks": "^1.5.2"
+		"scroll-into-view": "^1.9.5",
+		"styled-hooks": "^1.5.2",
+		"web-animations-js": "^2.3.1"
 	}
 }
