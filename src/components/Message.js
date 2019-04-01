@@ -1,15 +1,21 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 
-export default function Message({ markup, isGuest = false, box, parentBox, isLast, /*sink*/ children, ...props }) {
+export default function Message({
+  markup,
+  isGuest = false,
+  box,
+  parentBox,
+  isLast,
+  isComposer,
+  /*sink*/ children,
+  ...props
+}) {
   const className = useStyle`
     transform-origin: top right;
     position: relative;
     align-self: ${isGuest ? 'flex-end' : 'flex-start'};
     box-sizing: content-box;
-    /* margin: ${
-      isGuest ? `16px 0 ${box && parentBox ? `${parentBox.height - box.height}px` : 0} 16px` : '32px 16px 0 0'
-    }; */
     margin: ${isGuest ? `16px 0 0 16px` : '32px 16px 0 0'};
     border-radius: ${isGuest ? '4px 0 0 12px' : ' 0 4px 12px 0'};
     padding: 10px 16px;
@@ -18,7 +24,7 @@ export default function Message({ markup, isGuest = false, box, parentBox, isLas
     box-shadow: ${isGuest ? '0 5px 20px 0  rgba(20, 79, 102, 0.15)' : '0 5px 20px 0  rgba(20, 79, 102, 0.3)'};
 
     &[data-actor="host"] {
-      animation: enterHost .25s forwards;
+      animation: enterHost .5s forwards;
 
       &::before {
         content: 'ABC News Bot';
@@ -79,6 +85,11 @@ export default function Message({ markup, isGuest = false, box, parentBox, isLas
     & a {
       color: #002aff;
       text-decoration: none;
+    }
+
+    & svg {
+      width: 32px;
+      height: 8px;
     }
 
     & > :first-child {
@@ -147,7 +158,108 @@ export default function Message({ markup, isGuest = false, box, parentBox, isLas
       data-sketch-symbol={`Message/${isGuest ? 'Guest' : 'Host'}`}
       {...props}
     >
-      <div className={contentClassName} dangerouslySetInnerHTML={{ __html: markup }} />
+      {isComposer ? (
+        <div className={contentClassName}>
+          <Composer />
+        </div>
+      ) : (
+        <div className={contentClassName} dangerouslySetInnerHTML={{ __html: markup }} />
+      )}
     </div>
+  );
+}
+
+function Composer() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 37 100 25" preserveAspectRatio="xMidYMid" class="lds-ellipsis">
+      <circle cx="16" cy="50" r="10" fill="#ccc">
+        <animate
+          attributeName="r"
+          values="0;10;10;10;0"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="-0.6s"
+        />
+        <animate
+          attributeName="cx"
+          values="16;16;50;84;84"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="-0.6s"
+        />
+      </circle>
+      <circle cx="16" cy="50" r="10" fill="#144f66">
+        <animate
+          attributeName="r"
+          values="0;10;10;10;0"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="-0.3s"
+        />
+        <animate
+          attributeName="cx"
+          values="16;16;50;84;84"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="-0.3s"
+        />
+      </circle>
+      <circle cx="16" cy="50" r="10" fill="#ccc">
+        <animate
+          attributeName="r"
+          values="0;10;10;10;0"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="0s"
+        />
+        <animate
+          attributeName="cx"
+          values="16;16;50;84;84"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="0s"
+        />
+      </circle>
+      <circle cx="16" cy="50" r="10" fill="#144f66">
+        <animate
+          attributeName="r"
+          values="0;0;10;10;10"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="0s"
+        />
+        <animate
+          attributeName="cx"
+          values="16;16;16;50;84"
+          keyTimes="0;0.25;0.5;0.75;1"
+          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
+          calcMode="spline"
+          dur="1.2s"
+          repeatCount="indefinite"
+          begin="0s"
+        />
+      </circle>
+    </svg>
   );
 }

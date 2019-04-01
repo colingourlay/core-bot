@@ -19,8 +19,10 @@ export function useContext() {
 export const ACTION_TYPES = {
   OPEN_DIALOG: 1,
   CLOSE_DIALOG: 2,
-  HOST_MESSAGE: 3,
-  CHOOSE_PROMPT: 4
+  HOST_COMPOSING: 3,
+  HOST_MESSAGE: 4,
+  UPDATE_PROMPTS: 5,
+  CHOOSE_PROMPT: 6
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
@@ -43,8 +45,18 @@ function reducer(state, action) {
       return { ...state, isDialogOpen: true };
     case ACTION_TYPES.CLOSE_DIALOG:
       return { ...state, isDialogOpen: false };
+    case ACTION_TYPES.HOST_COMPOSING:
+      const history = state.history;
+      const lastMessage = history[history.length - 1];
+
+      if (lastMessage.isGuest) {
+        delete lastMessage.box;
+        delete lastMessage.parentBox;
+      }
+
+      return { ...state, isHostComposing: true, history };
     case ACTION_TYPES.HOST_MESSAGE:
-      return { ...state, history: state.history.concat([action.data]) };
+      return { ...state, isHostComposing: false, history: state.history.concat([action.data]) };
     case ACTION_TYPES.UPDATE_PROMPTS:
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
@@ -55,7 +67,9 @@ function reducer(state, action) {
       const nextPrompts = getNextPrompts(targetNode, state.graph);
       const messageInterval = setInterval(() => {
         if (nextHostMessages.length) {
-          return dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: nextHostMessages.shift() });
+          setTimeout(() => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: nextHostMessages.shift() }), 1000);
+
+          return dispatch({ type: ACTION_TYPES.HOST_COMPOSING });
         }
 
         clearInterval(messageInterval);

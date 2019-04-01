@@ -48,7 +48,7 @@ export default function Chat() {
         validTarget: target => target === ref.current
       });
     }
-  }, [state.history.length, state.prompts.length]);
+  }, [state.history.length, state.prompts.length, state.isHostComposing]);
 
   return (
     <div ref={ref} className={className} data-sketch-symbol="Output">
@@ -56,6 +56,7 @@ export default function Chat() {
         {state.history.map((props, index) => (
           <Message key={index} isLast={index + 1 === state.history.length} {...props} />
         ))}
+        {state.isHostComposing && <Message key={'composing'} isComposer={true} />}
       </div>
       <Prompts />
       <div ref={bottomRef} />
