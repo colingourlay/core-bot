@@ -88,7 +88,7 @@ export default function Message({
     }
 
     & svg {
-      width: 32px;
+      width: 30px;
       height: 8px;
     }
 
@@ -160,7 +160,7 @@ export default function Message({
     >
       {isComposer ? (
         <div className={contentClassName}>
-          <Composer />
+          <Ellipsis />
         </div>
       ) : (
         <div className={contentClassName} dangerouslySetInnerHTML={{ __html: markup }} />
@@ -169,97 +169,54 @@ export default function Message({
   );
 }
 
-function Composer() {
+function Ellipsis() {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 37 100 25" preserveAspectRatio="xMidYMid" class="lds-ellipsis">
-      <circle cx="16" cy="50" r="10" fill="#ccc">
-        <animate
-          attributeName="r"
-          values="0;10;10;10;0"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="-0.6s"
-        />
-        <animate
-          attributeName="cx"
-          values="16;16;50;84;84"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="-0.6s"
-        />
-      </circle>
-      <circle cx="16" cy="50" r="10" fill="#144f66">
-        <animate
-          attributeName="r"
-          values="0;10;10;10;0"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="-0.3s"
-        />
-        <animate
-          attributeName="cx"
-          values="16;16;50;84;84"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="-0.3s"
-        />
-      </circle>
-      <circle cx="16" cy="50" r="10" fill="#ccc">
-        <animate
-          attributeName="r"
-          values="0;10;10;10;0"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="0s"
-        />
-        <animate
-          attributeName="cx"
-          values="16;16;50;84;84"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="0s"
-        />
-      </circle>
-      <circle cx="16" cy="50" r="10" fill="#144f66">
-        <animate
-          attributeName="r"
-          values="0;0;10;10;10"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="0s"
-        />
-        <animate
-          attributeName="cx"
-          values="16;16;16;50;84"
-          keyTimes="0;0.25;0.5;0.75;1"
-          keySplines="0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1;0 0.5 0.5 1"
-          calcMode="spline"
-          dur="1.2s"
-          repeatCount="indefinite"
-          begin="0s"
-        />
-      </circle>
+    <svg class="lds-message" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" preserveAspectRatio="xMidYMid">
+      <g transform="translate(4 4)">
+        <circle cx="0" cy="0" r="4" fill="#d0dce0">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.375s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </g>
+      <g transform="translate(15 4)">
+        <circle cx="0" cy="0" r="4" fill="#7295a3">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.25s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </g>
+      <g transform="translate(26 4)">
+        <circle cx="0" cy="0" r="4" fill="#144f66">
+          <animateTransform
+            attributeName="transform"
+            type="scale"
+            begin="-0.125s"
+            calcMode="spline"
+            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
+            values="0;1;0"
+            keyTimes="0;0.5;1"
+            dur="1s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </g>
     </svg>
   );
 }
