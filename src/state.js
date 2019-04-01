@@ -1,4 +1,5 @@
 import React from 'react';
+import Sequenza from 'sequenza';
 
 export const Context = React.createContext({});
 
@@ -65,16 +66,23 @@ function reducer(state, action) {
       const nextGuestMessage = { markup, isGuest: true, box, parentBox };
       const nextHostMessages = getNextHostMessages(targetNode, state.graph);
       const nextPrompts = getNextPrompts(targetNode, state.graph);
-      const messageInterval = setInterval(() => {
-        if (nextHostMessages.length) {
-          setTimeout(() => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: nextHostMessages.shift() }), 1000);
+      const sequenza = new Sequenza();
 
-          return dispatch({ type: ACTION_TYPES.HOST_COMPOSING });
-        }
-
-        clearInterval(messageInterval);
-        dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: nextPrompts });
-      }, 2000);
+      nextHostMessages.forEach(message => {
+        sequenza.queue({
+          callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
+          delay: 1000
+        });
+        sequenza.queue({
+          callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: message }),
+          delay: 1000 + (message.markup ? message.markup.length * 10 : 1000) // simulate typing time
+        });
+      });
+      sequenza.queue({
+        callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: nextPrompts }),
+        delay: 2000
+      });
+      sequenza.start();
 
       return { ...state, prompts: [], history: state.history.concat([nextGuestMessage]) };
     default:
