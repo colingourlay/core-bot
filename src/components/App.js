@@ -14,7 +14,7 @@ export default function App(props) {
       <div>
         <Card />
         <Power onClick={() => dispatch(OPEN_DIALOG_ACTION)} />
-        <Dialog>{() => <Chat />}</Dialog>
+        <Dialog render={() => <Chat />} />
       </div>
     </Provider>
   );

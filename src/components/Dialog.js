@@ -16,7 +16,7 @@ const DIALOG_TRANSITION_STATES = {
 const AnimatedDialogOverlay = animated(DialogOverlay);
 const AnimatedDialogContent = animated(DialogContent);
 
-export default function Dialog({ children }) {
+export default function Dialog({ render }) {
   const { state, dispatch } = useContext();
   const [, viewportHeight] = useViewportSize();
   const transitions = useTransition(state.isDialogOpen, null, DIALOG_TRANSITION_STATES);
@@ -72,7 +72,7 @@ export default function Dialog({ children }) {
             >
               <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
               <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
-                {children()}
+                {render()}
               </AnimatedDialogContent>
             </AnimatedDialogOverlay>
           )
