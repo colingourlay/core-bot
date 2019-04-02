@@ -71,7 +71,7 @@ function reducer(state, action) {
       nextHostMessages.forEach(message => {
         sequenza.queue({
           callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
-          delay: 1000
+          delay: 1500
         });
         sequenza.queue({
           callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: message }),

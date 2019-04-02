@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
+import Ellipsis from './Ellipsis';
 
 export default function Message({
   markup,
@@ -18,12 +19,13 @@ export default function Message({
     box-sizing: content-box;
     margin: ${isGuest ? `16px 0 0 16px` : '32px 16px 0 0'};
     border-radius: ${isGuest ? '4px 0 0 12px' : ' 0 4px 12px 0'};
-    padding: 10px 16px;
+    padding: 12px 16px;
     max-width: calc(100% - 16px);
     background-color: ${isGuest ? '#144f66' : '#fff'};
     box-shadow: ${isGuest ? '0 5px 20px 0  rgba(20, 79, 102, 0.15)' : '0 5px 20px 0  rgba(20, 79, 102, 0.3)'};
+    font-size: 0;
 
-    &[data-actor="host"] {
+    &[data-is-host] {
       animation: enterHost .5s forwards;
 
       &::before {
@@ -49,16 +51,17 @@ export default function Message({
       }
     }
 
-    &[data-actor="host"] + &[data-actor="host"] {
+    &[data-is-host] + &[data-is-host] {
       margin-top: 10px;
-
-      &::before {
-        content: none;
-      }
+    }
+    
+    &[data-is-composer]::before,
+    &[data-is-host] + &[data-is-host]::before {
+      content: none;
     }
 
-    &[data-actor="guest"] {
-      transition: margin-bottom .25s;
+    &[data-is-guest] {
+      transition: margin-bottom .5s;
 
       &::after {
         content: '';
@@ -71,6 +74,11 @@ export default function Message({
         height: 100%;
         background-color: inherit;
       }
+    }
+
+    & svg {
+      width: 30px;
+      height: 8px;
     }
   `;
 
@@ -85,11 +93,6 @@ export default function Message({
     & a {
       color: #002aff;
       text-decoration: none;
-    }
-
-    & svg {
-      width: 30px;
-      height: 8px;
     }
 
     & > :first-child {
@@ -112,39 +115,13 @@ export default function Message({
       const el = ref.current;
       const from = box;
       const to = el.getBoundingClientRect();
-      const diff = {
-        x: from.left - to.left,
-        y: from.top - to.top
-      };
 
-      el.animate(
-        [
-          {
-            offset: 0,
-            opacity: 1,
-            transform: `translate(${diff.x}px, ${diff.y}px)`,
-            borderRadius: '4px',
-            boxShadow: '0 5px 20px 0  rgba(20, 79, 102, 0)',
-            easing: 'cubic-bezier(0.25, 0.5, 0.25, 1)'
-          },
-          {
-            offset: 0.33,
-            transform: `translate(0, ${diff.y}px)`,
-            borderRadius: '4px',
-            boxShadow: '0 5px 20px 0  rgba(20, 79, 102, 0)',
-            easing: 'cubic-bezier(0.25, 0.5, 0.25, 1)'
-          },
-          {
-            opacity: 1,
-            transform: 'none',
-            borderRadius: '4px 0 0 12px',
-            boxShadow: '0 5px 20px 0  rgba(20, 79, 102, 0.15)'
-          }
-        ],
-        {
-          duration: 500,
-          fill: 'forwards'
-        }
+      el.animate.apply(
+        el,
+        promptToMessageAnimation({
+          x: from.left - to.left,
+          y: from.top - to.top
+        })
       );
     }
   }, []);
@@ -155,68 +132,32 @@ export default function Message({
       className={className}
       style={{ marginBottom: box && parentBox && isLast ? `${parentBox.height - box.height}px` : 0 }}
       data-actor={isGuest ? 'guest' : 'host'}
+      data-is-composer={isComposer ? '' : null}
+      data-is-guest={isGuest ? '' : null}
+      data-is-host={!isGuest ? '' : null}
       data-sketch-symbol={`Message/${isGuest ? 'Guest' : 'Host'}`}
       {...props}
     >
-      {isComposer ? (
-        <div className={contentClassName}>
-          <Ellipsis />
-        </div>
-      ) : (
-        <div className={contentClassName} dangerouslySetInnerHTML={{ __html: markup }} />
-      )}
+      {isComposer ? <Ellipsis /> : <div className={contentClassName} dangerouslySetInnerHTML={{ __html: markup }} />}
     </div>
   );
 }
 
-function Ellipsis() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 8" preserveAspectRatio="xMidYMid">
-      <g transform="translate(4 4)">
-        <circle cx="0" cy="0" r="4" fill="#d0dce0">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="-0.375s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      </g>
-      <g transform="translate(15 4)">
-        <circle cx="0" cy="0" r="4" fill="#7295a3">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="-0.25s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      </g>
-      <g transform="translate(26 4)">
-        <circle cx="0" cy="0" r="4" fill="#144f66">
-          <animateTransform
-            attributeName="transform"
-            type="scale"
-            begin="-0.125s"
-            calcMode="spline"
-            keySplines="0.3 0 0.7 1;0.3 0 0.7 1"
-            values="0;1;0"
-            keyTimes="0;0.5;1"
-            dur="1s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      </g>
-    </svg>
-  );
+function promptToMessageAnimation({ x, y }) {
+  const boxShadow = '0 5px 20px 0  rgba(20, 79, 102, 0)';
+  const easing = 'cubic-bezier(0.25, 0.5, 0.25, 1)';
+  return [
+    {
+      offset: [0, 0.5],
+      easing: [easing, easing],
+      opacity: [1, 1, 1],
+      transform: [`translate(${x}px, ${y}px)`, `translate(0, ${y}px)`, 'none'],
+      borderRadius: ['4px', '4px 0 0 12px'],
+      boxShadow: [boxShadow, boxShadow, boxShadow.replace(')', '.15)')]
+    },
+    {
+      duration: 750,
+      fill: 'forwards'
+    }
+  ];
 }

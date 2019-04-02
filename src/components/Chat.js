@@ -19,13 +19,16 @@ export default function Chat() {
     overflow: scroll;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;margin-right: -32px;
-    padding:192px 32px 0 0;
+    padding: 400px 32px 0 0;
   `;
   const messagesClassName = useStyle`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-start;
+  `;
+  const bottomClassName = useStyle`
+    height: 16px;
   `;
 
   useLayoutEffect(() => {
@@ -59,7 +62,7 @@ export default function Chat() {
         {state.isHostComposing && <Message key={'composing'} isComposer={true} />}
       </div>
       <Prompts />
-      <div ref={bottomRef} />
+      <div ref={bottomRef} className={bottomClassName} />
     </div>
   );
 }

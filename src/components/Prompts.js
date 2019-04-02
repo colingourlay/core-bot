@@ -8,7 +8,7 @@ export default function Prompts() {
   const { prompts } = state;
 
   const className = useStyle`
-    margin: 32px 8px 16px;
+    margin: 32px 8px 0;
 
     &:not(:empty):before {
       content: ${prompts.length > 1 ? `'Choose one'` : 'none'};
@@ -36,7 +36,7 @@ export default function Prompts() {
     margin: 0;
     border: 0;
     border-radius: 4px;
-    padding: 10px 16px;
+    padding: 12px 16px;
     width: 100%;
     background-color: #000;
     color: #fff;
