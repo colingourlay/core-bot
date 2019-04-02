@@ -40,6 +40,29 @@ function getNextPrompts(node, graph) {
   );
 }
 
+function scheduleHostActivity(nodeId, graph, dispatch) {
+  const targetNode = graph.nodes[nodeId];
+  const nextHostMessages = getNextHostMessages(targetNode, graph);
+  const nextPrompts = getNextPrompts(targetNode, graph);
+  const sequenza = new Sequenza();
+
+  nextHostMessages.forEach((message, index) => {
+    sequenza.queue({
+      callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
+      delay: index ? 750 : 1250
+    });
+    sequenza.queue({
+      callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: message }),
+      delay: Math.min(1250 + (message.markup ? message.markup.split(' ').length * 100 : 1000), 3000)
+    });
+  });
+  sequenza.queue({
+    callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: nextPrompts }),
+    delay: 1750
+  });
+  sequenza.start();
+}
+
 function reducer(state, action) {
   switch (action.type) {
     case ACTION_TYPES.OPEN_DIALOG:
@@ -62,27 +85,9 @@ function reducer(state, action) {
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
       const { targetNodeId, markup, box, parentBox, dispatch } = action.data;
-      const targetNode = state.graph.nodes[targetNodeId];
       const nextGuestMessage = { markup, isGuest: true, box, parentBox };
-      const nextHostMessages = getNextHostMessages(targetNode, state.graph);
-      const nextPrompts = getNextPrompts(targetNode, state.graph);
-      const sequenza = new Sequenza();
 
-      nextHostMessages.forEach((message, index) => {
-        sequenza.queue({
-          callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
-          delay: index ? 750 : 1250
-        });
-        sequenza.queue({
-          callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: message }),
-          delay: Math.min(1250 + (message.markup ? message.markup.split(' ').length * 100 : 1000), 3000)
-        });
-      });
-      sequenza.queue({
-        callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: nextPrompts }),
-        delay: 1750
-      });
-      sequenza.start();
+      scheduleHostActivity(targetNodeId, state.graph, dispatch);
 
       return { ...state, prompts: [], history: state.history.concat([nextGuestMessage]) };
     default:
