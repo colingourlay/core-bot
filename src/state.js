@@ -68,19 +68,19 @@ function reducer(state, action) {
       const nextPrompts = getNextPrompts(targetNode, state.graph);
       const sequenza = new Sequenza();
 
-      nextHostMessages.forEach(message => {
+      nextHostMessages.forEach((message, index) => {
         sequenza.queue({
           callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
-          delay: 1500
+          delay: index ? 750 : 1250
         });
         sequenza.queue({
           callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: message }),
-          delay: 1000 + (message.markup ? message.markup.length * 10 : 1000) // simulate typing time
+          delay: Math.min(1250 + (message.markup ? message.markup.split(' ').length * 100 : 1000), 3000)
         });
       });
       sequenza.queue({
         callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: nextPrompts }),
-        delay: 2000
+        delay: 1750
       });
       sequenza.start();
 

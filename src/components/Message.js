@@ -23,7 +23,6 @@ export default function Message({
     max-width: calc(100% - 16px);
     background-color: ${isGuest ? '#144f66' : '#fff'};
     box-shadow: ${isGuest ? '0 5px 20px 0  rgba(20, 79, 102, 0.15)' : '0 5px 20px 0  rgba(20, 79, 102, 0.3)'};
-    font-size: 0;
 
     &[data-is-host] {
       animation: enterHost .5s forwards;
@@ -32,7 +31,6 @@ export default function Message({
         content: 'ABC News Bot';
         position: absolute;
         top: -20px;
-        left: 16px;
         color: #144f66;
         font-family: ABCSans;
         font-size: 11px;
@@ -54,10 +52,15 @@ export default function Message({
     &[data-is-host] + &[data-is-host] {
       margin-top: 10px;
     }
+
+    &[data-is-composer] {
+      margin-bottom: 60px;
+      font-size: 0;
+    }
     
     &[data-is-composer]::before,
     &[data-is-host] + &[data-is-host]::before {
-      content: none;
+      content: ' ';
     }
 
     &[data-is-guest] {

@@ -18,8 +18,9 @@ export default function Chat() {
   const className = useStyle`
     overflow: scroll;
     overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;margin-right: -32px;
-    padding: 400px 32px 0 0;
+    -webkit-overflow-scrolling: touch;
+    margin-right: -32px;
+    padding: 500px 32px 0 0;
   `;
   const messagesClassName = useStyle`
     display: flex;
@@ -28,7 +29,8 @@ export default function Chat() {
     align-items: flex-start;
   `;
   const bottomClassName = useStyle`
-    height: 16px;
+    margin-top: 15px;
+    height: 1px;
   `;
 
   useLayoutEffect(() => {
@@ -54,7 +56,7 @@ export default function Chat() {
   }, [state.history.length, state.prompts.length, state.isHostComposing]);
 
   return (
-    <div ref={ref} className={className} data-sketch-symbol="Output">
+    <div ref={ref} className={className} data-sketch-symbol="Chat">
       <div className={messagesClassName}>
         {state.history.map((props, index) => (
           <Message key={index} isLast={index + 1 === state.history.length} {...props} />

@@ -8,7 +8,7 @@ export default function Prompts() {
   const { prompts } = state;
 
   const className = useStyle`
-    margin: 32px 8px 0;
+    margin: 30px 8px 0;
 
     &:not(:empty):before {
       content: ${prompts.length > 1 ? `'Choose one'` : 'none'};
@@ -33,7 +33,7 @@ export default function Prompts() {
 
   const promptClassName = useStyle`
     display: block;
-    margin: 0;
+    margin: 8px 0 0;
     border: 0;
     border-radius: 4px;
     padding: 12px 16px;
@@ -46,14 +46,6 @@ export default function Prompts() {
     line-height: 1.5;
     letter-spacing: 0.25px;
     transition: opacity .125s, background-color .125s;
-
-    &:first-child:not(:last-child) {
-      margin-top: 12px;
-    }
-
-    &:not(:first-child) {
-      margin-top: 7px;
-    }
 
     [data-has-chosen] > &:not([data-is-chosen]) {
       opacity: 0;
