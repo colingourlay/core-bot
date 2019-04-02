@@ -147,14 +147,28 @@ function promptToMessageAnimation({ x, y }) {
   const boxShadow = '0 5px 20px 0  rgba(20, 79, 102, 0)';
   const easing = 'cubic-bezier(0.25, 0.5, 0.25, 1)';
   return [
-    {
-      offset: [0, 0.5],
-      easing: [easing, easing],
-      opacity: [1, 1, 1],
-      transform: [`translate(${x}px, ${y}px)`, `translate(0, ${y}px)`, 'none'],
-      borderRadius: ['4px', '4px 0 0 12px'],
-      boxShadow: [boxShadow, boxShadow, boxShadow.replace(')', '.15)')]
-    },
+    [
+      {
+        easing,
+        opacity: 1,
+        transform: `translate(${x}px, ${y}px)`,
+        borderRadius: '4px',
+        boxShadow
+      },
+      {
+        easing,
+        opacity: 1,
+        transform: `translate(0, ${y}px)`,
+        borderRadius: '4px 0 0 12px',
+        boxShadow
+      },
+      {
+        opacity: 1,
+        transform: 'none',
+        borderRadius: '4px 0 0 12px',
+        boxShadow: boxShadow.replace(')', '.15)')
+      }
+    ],
     {
       duration: 750,
       fill: 'forwards'
