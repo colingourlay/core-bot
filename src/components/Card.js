@@ -55,6 +55,7 @@ export default function Card({ text, icon, action }) {
       text-align: left;
       text-transform: uppercase;
       letter-spacing: 1px;
+      cursor: pointer;
 
       @media (min-width: 360px) {
         padding: 10px 16px;
