@@ -62,7 +62,7 @@ export default function Chat() {
   }, [state.history.length, state.prompts.length, state.isHostComposing]);
 
   return (
-    <div ref={ref} className={className} data-sketch-symbol="Chat">
+    <div ref={ref} className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Chat'}>
       <div className={bubblesClassName}>
         {state.history.map((props, index) => (
           <Bubble key={index} isLast={index + 1 === state.history.length && state.prompts.length === 0} {...props} />

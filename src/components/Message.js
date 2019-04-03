@@ -58,5 +58,11 @@ export default function Message({ isInverted = false, markup }) {
     }
   `;
 
-  return <div className={className} dangerouslySetInnerHTML={{ __html: markup }} data-sketch-symbol="Message" />;
+  return (
+    <div
+      className={className}
+      dangerouslySetInnerHTML={{ __html: markup }}
+      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Message'}
+    />
+  );
 }

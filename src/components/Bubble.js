@@ -2,6 +2,8 @@ import React, { useLayoutEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import Ellipsis from './Ellipsis';
 import Message from './Message';
+import { DEFAULTS } from '../constants';
+import { useContext } from '../state';
 
 const CUBIC_BEZIER_EASING = 'cubic-bezier(0.25, 0.5, 0.25, 1)';
 const TRANSPARENT_BOX_SHADOW = '0 5px 20px 0  rgba(20, 79, 102, 0)';
@@ -16,6 +18,7 @@ export default function Bubble({
   /*sink*/ children,
   ...props
 }) {
+  const { state } = useContext();
   const className = useStyle`
     transform-origin: top right;
     position: relative;
@@ -33,7 +36,7 @@ export default function Bubble({
       }
 
       &::before {
-        content: 'ABC News Bot';
+        content: ${`'${state.author || DEFAULTS.AUTHOR}'`};
         position: absolute;
         top: -20px;
         left: 16px;
@@ -118,7 +121,7 @@ export default function Bubble({
       data-is-guest={isGuest ? '' : null}
       data-is-host={!isGuest ? '' : null}
       data-is-last={isLast || isComposer ? '' : null}
-      data-sketch-symbol={`Bubble/${isGuest ? 'Guest' : 'Host'}`}
+      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : `Bubble/${isGuest ? 'Guest' : 'Host'}`}
       {...props}
     >
       {isComposer ? <Ellipsis /> : <Message isInverted={isGuest} markup={markup} />}

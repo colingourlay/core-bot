@@ -4,7 +4,7 @@ import capiFetch from '@abcnews/capi-fetch';
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
-import { createGraph } from './utils/index';
+import { articleDocumentToAppProps } from './utils/index';
 import './global.css';
 
 let fetch = capiFetch;
@@ -32,12 +32,7 @@ fetch(coreBotId, (err, doc) => {
     throw new Error(`Couldn't fetch Core Bot script`);
   }
 
-  if (!doc.text) {
-    throw new Error(`Core Bot script has no text`);
-  }
-
-  appProps = { graph: createGraph(doc.text), title: doc.title };
-
+  appProps = articleDocumentToAppProps(doc);
   init();
 });
 

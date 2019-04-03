@@ -3,6 +3,8 @@ import twemoji from 'twemoji';
 import { name } from '../../package';
 import smartquotes from './smartquotes';
 
+const SP = ' ';
+const NBSP = String.fromCharCode(160);
 const NEXT_PROPS = ['then', 'and', 'or'];
 const IS_DEBUG = String(window.location.host).indexOf('aus.aunty') > -1;
 // https://reactnativecafe.com/emojis-in-javascript/#Conclusion
@@ -134,7 +136,7 @@ function validateGraph(graph) {
   });
 }
 
-export function createGraph(markup) {
+function createGraph(markup) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(markup, 'text/html');
   const emojiUsed = new Set();
@@ -218,4 +220,23 @@ export function createGraph(markup) {
   }
 
   return graph;
+}
+
+export function articleDocumentToAppProps(doc) {
+  if (!doc.text) {
+    throw new Error(`Document has no text`);
+  }
+
+  const title = doc.title;
+  const author = (doc.bylinePlain || '').trim();
+  const cta = doc.teaserTextPlain.indexOf('#') === 0 ? null : doc.teaserTextPlain.trim();
+
+  return { graph: createGraph(doc.text), title, author, cta };
+}
+
+export function widont(text) {
+  const words = text.split(SP);
+  const lastTwoWordsText = words.slice(-2).join(SP);
+
+  return `${words.slice(0, -2).join(SP)} ${lastTwoWordsText.replace(' ', lastTwoWordsText.length > 15 ? SP : NBSP)}`;
 }

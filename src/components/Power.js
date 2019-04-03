@@ -1,6 +1,7 @@
 import VisuallyHidden from '@reach/visually-hidden';
 import React from 'react';
 import { useStyle } from 'styled-hooks';
+import { DEFAULTS } from '../constants';
 import { useContext, OPEN_DIALOG_ACTION } from '../state';
 
 const PATHS = {
@@ -70,14 +71,19 @@ export default function Power({ isOn, onClick }) {
   const id = `${className.replace(' ', '')}${nextId++}`;
 
   return (
-    <button id={id} className={className} onClick={onClick} data-sketch-symbol={`Power/${isOn ? 'On' : 'Off'}`}>
+    <button
+      id={id}
+      className={className}
+      onClick={onClick}
+      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : `Power/${isOn ? 'On' : 'Off'}`}
+    >
       <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" aria-hidden>
         <path d={isOn ? PATHS.ON : PATHS.OFF} />
       </svg>
       {isOn ? (
         <VisuallyHidden>{'Close the ABC News Bot'}</VisuallyHidden>
       ) : (
-        <label htmlFor={id}>Ask the ABC News Bot</label>
+        <label htmlFor={id}>{state.cta || DEFAULTS.CTA}</label>
       )}
     </button>
   );

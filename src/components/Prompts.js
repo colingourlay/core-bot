@@ -59,7 +59,7 @@ export default function Prompts() {
       key={key}
       className={className}
       data-has-chosen={chosenIndex !== null ? '' : null}
-      data-sketch-symbol="Prompts"
+      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Prompts'}
     >
       {prompts.map(({ targetNodeId, markup }, index) => {
         let hasChosenPrompt;

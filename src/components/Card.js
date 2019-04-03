@@ -1,11 +1,10 @@
 import VisuallyHidden from '@reach/visually-hidden';
 import React from 'react';
 import { useStyle } from 'styled-hooks';
+import { DEFAULTS } from '../constants';
 import { useContext, OPEN_DIALOG_ACTION } from '../state';
+import { widont } from '../utils/index';
 import Power from './Power';
-
-const SP = ' ';
-const NBSP = String.fromCharCode(160);
 
 export default function Card({ text, icon, action }) {
   const { state, dispatch } = useContext();
@@ -69,19 +68,12 @@ export default function Card({ text, icon, action }) {
     left: 0;
   `;
 
-  const titleWords = state.title.split(SP);
-  const lastTwoTitleWordsText = titleWords.slice(-2).join(SP);
-  const titleText = `${titleWords.slice(0, -2).join(SP)} ${lastTwoTitleWordsText.replace(
-    ' ',
-    lastTwoTitleWordsText.length > 15 ? SP : NBSP
-  )}`;
-
   return (
-    <div className={className} data-sketch-symbol="Card">
+    <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Card'}>
       <div className={innerClassName}>
         <VisuallyHidden>ABC News Chat Bot</VisuallyHidden>
-        <h3>{titleText}</h3>
-        <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>Ask the ABC&nbsp;News&nbsp;Bot</button>
+        <h3>{widont(state.title)}</h3>
+        <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>{widont(state.cta || DEFAULTS.CTA)}</button>
       </div>
       <svg className={iconClassName} xmlns="http://www.w3.org/2000/svg" width="30" height="29" aria-hidden>
         <path d="M30 18v11l-9-9H5a5 5 0 0 1-5-5V2a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v16z" />
