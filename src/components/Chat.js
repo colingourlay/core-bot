@@ -18,6 +18,7 @@ export default function Chat() {
   const className = useStyle`
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding: 425px 0 0 0;
