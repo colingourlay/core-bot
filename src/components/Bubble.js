@@ -60,9 +60,7 @@ export default function Bubble({
     }
 
     &[data-is-composer] {
-      padding: 12px 16px;
       margin-bottom: 60px;
-      font-size: 0;
     }
     
     &[data-is-composer]::before,
