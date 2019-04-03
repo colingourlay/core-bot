@@ -28,12 +28,20 @@ export default function Power({ isOn, onClick }) {
     width: 42px;
     height: 42px;
     background-color: rgba(255, 255, 255, 0.85);
-    box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.4);
+    box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.3);
     color: #000;
     transition: opacity 0.25s, transform 0.5s;
 
+    @media (min-width: 480px) {
+      right: 32px;
+    }
+
+    @media (min-height: 640px) {
+      bottom: 32px;
+    }
+
     .is-over-footer & {
-      transform: translate(0, 150%);
+      transform: translate(0, 100px);
     }
 
     label {
@@ -50,7 +58,7 @@ export default function Power({ isOn, onClick }) {
       line-height: 1;
       letter-spacing: 1px;
       white-space: nowrap;
-      transition: opacity .25s;
+      transition: opacity 0.25s;
     }
 
     span {

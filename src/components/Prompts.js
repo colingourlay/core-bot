@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStyle } from 'styled-hooks';
 import { useContext, ACTION_TYPES } from '../state';
+import Message from './Message';
 
 export default function Prompts() {
   const { state, dispatch } = useContext();
@@ -19,7 +20,7 @@ export default function Prompts() {
       font-size: 15px;
       font-weight: 600;
       line-height: 1;
-      transition: opacity .25s;
+      transition: opacity 0.25s;
     }
 
     &[data-has-chosen] {
@@ -36,16 +37,11 @@ export default function Prompts() {
     margin: 8px 0 0;
     border: 0;
     border-radius: 4px;
-    padding: 12px 16px;
+    padding: 0;
     width: 100%;
     background-color: #000;
-    color: #fff;
-    font-family: ABCSans;
-    font-size: 15px;
     text-align: left;
-    line-height: 1.5;
-    letter-spacing: 0.25px;
-    transition: opacity .125s, background-color .125s;
+    transition: opacity 0.125s, background-color 0.125s;
 
     [data-has-chosen] > &:not([data-is-chosen]) {
       opacity: 0;
@@ -102,8 +98,9 @@ export default function Prompts() {
             className={promptClassName}
             data-is-chosen={chosenIndex === index ? '' : null}
             onClick={choosePrompt}
-            dangerouslySetInnerHTML={{ __html: markup }}
-          />
+          >
+            <Message isInverted markup={markup} />
+          </button>
         );
       })}
     </div>

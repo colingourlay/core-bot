@@ -36,6 +36,7 @@
 		"scroll-into-view": "^1.9.5",
 		"sequenza": "^1.0.0",
 		"styled-hooks": "^1.5.2",
+		"twemoji": "^11.3.0",
 		"web-animations-js": "^2.3.1"
 	}
 }

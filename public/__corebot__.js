@@ -7,8 +7,15 @@ __corebot__ = {
     <a name="aTHENb"></a>
     <h2>Question A</h2> 
     <p>This is Answer A</p>
+    <p>This has an emoji 💜. The next couple are only emoji</p>
+    <p>️❤️💚💙</p>
+    <p>️😀😃😄😁😆😅😂🤣</p>
+    <p>This ends with an emoji 💩</p>
+    <p>This ends with an emoji and should span a couple of lines 💜</p>
+    <p>This ends with an emoji and should definitely span more than a couple of lines 💜</p>
+    <p>This ends with an emoji 💜 but also has one earlier 💜</p>
     <a name="bTHENa"></a>
-    <h2>Question B</h2>
+    <h2>💜 Question B</h2>
     <p>This is Answer B</p>
   `
 };

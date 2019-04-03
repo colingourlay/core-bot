@@ -3,8 +3,8 @@ import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import scrollIntoView from 'scroll-into-view';
 import { useStyle } from 'styled-hooks';
 import { useContext } from '../state';
+import Bubble from './Bubble';
 import Prompts from './Prompts';
-import Message from './Message';
 
 const IS_SMOOTH_SCROLL_SUPPORTED = 'scrollBehavior' in document.documentElement.style;
 const SCROLL_INTO_VIEW_ARG = IS_SMOOTH_SCROLL_SUPPORTED
@@ -20,9 +20,9 @@ export default function Chat() {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     margin-right: -32px;
-    padding: 500px 32px 0 0;
+    padding: 425px 32px 0 0;
   `;
-  const messagesClassName = useStyle`
+  const bubblesClassName = useStyle`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -57,11 +57,11 @@ export default function Chat() {
 
   return (
     <div ref={ref} className={className} data-sketch-symbol="Chat">
-      <div className={messagesClassName}>
+      <div className={bubblesClassName}>
         {state.history.map((props, index) => (
-          <Message key={index} isLast={index + 1 === state.history.length} {...props} />
+          <Bubble key={index} isLast={index + 1 === state.history.length && state.prompts.length === 0} {...props} />
         ))}
-        {state.isHostComposing && <Message key={'composing'} isComposer={true} />}
+        {state.isHostComposing && <Bubble key={'composing'} isComposer={true} />}
       </div>
       <Prompts />
       <div ref={bottomRef} className={bottomClassName} />

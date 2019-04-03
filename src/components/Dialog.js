@@ -41,11 +41,19 @@ export default function Dialog({ render }) {
     overflow: hidden;
     margin: 0;
     width: calc(100vw - 24px);
-    max-width: 384px;
     height: ${viewportHeight - 80}px;
-    max-height: 576px;
     background: rgb(237, 241, 242);
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+
+    @media (min-width: 480px) {
+      right: 32px;
+      max-width: 345px;
+    }
+
+    @media (min-height: 640px) {
+      bottom: 88px;
+      max-height: 480px;
+    }
 
     &::after {
       content: '';

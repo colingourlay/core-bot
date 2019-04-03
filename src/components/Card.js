@@ -46,7 +46,7 @@ export default function Card({ text, icon, action }) {
       width: 100%;
       background-color: #144f66;
       background-image: linear-gradient(30deg, #1e7799, #144f66);
-      box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.4);
+      box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.3);
       color: #fff;
       font-family: ABCSans;
       font-size: 12px;
