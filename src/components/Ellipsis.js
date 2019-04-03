@@ -3,7 +3,7 @@ import { useStyle } from 'styled-hooks';
 
 export default function Ellipsis() {
   const className = useStyle`
-    margin: 12px 16px;
+    margin: 8px 16px;
     
     & > * {
       display: inline-block;
@@ -28,7 +28,7 @@ export default function Ellipsis() {
         opacity: 1;
       }
       to {
-        opacity: 0;
+        opacity: 0.2;
       }
     }
   `;
