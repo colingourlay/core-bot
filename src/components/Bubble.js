@@ -47,7 +47,7 @@ export default function Bubble({
 
       @keyframes enterHost {
         from {
-          transform: translate(0, 100px);
+          transform: translate(-100%, 0);
         }
         to {
           transforom: none;
