@@ -36,7 +36,7 @@ export default function Power({ isOn, onClick }) {
       right: 32px;
     }
 
-    @media (min-height: 640px) {
+    @media (min-height: 720px) {
       bottom: 32px;
     }
 

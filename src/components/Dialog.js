@@ -50,7 +50,7 @@ export default function Dialog({ render }) {
       max-width: 345px;
     }
 
-    @media (min-height: 640px) {
+    @media (min-height: 720px) {
       bottom: 88px;
       max-height: 480px;
     }
@@ -61,7 +61,7 @@ export default function Dialog({ render }) {
       top: 0;
       left: 0;
       width: 100%;
-      height: 60px;
+      height: 48px;
       background-image: linear-gradient(to bottom, rgba(237, 241, 242, 1), rgba(237, 241, 242, 0));
       pointer-events: none;
     }

@@ -16,11 +16,16 @@ export default function Chat() {
   const ref = useRef();
   const bottomRef = useRef();
   const className = useStyle`
-    overflow: scroll;
-    overflow-x: hidden;
+    overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
-    margin-right: -32px;
-    padding: 425px 32px 0 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 425px 0 0 0;
+
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
   `;
   const bubblesClassName = useStyle`
     display: flex;
