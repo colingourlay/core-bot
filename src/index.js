@@ -4,7 +4,7 @@ import capiFetch from '@abcnews/capi-fetch';
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
-import { createGraph } from './utils';
+import { createGraph } from './utils/index';
 import './global.css';
 
 let fetch = capiFetch;

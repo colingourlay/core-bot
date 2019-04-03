@@ -1,6 +1,7 @@
 import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
 import twemoji from 'twemoji';
-import { name } from '../package';
+import { name } from '../../package';
+import smartquotes from './smartquotes';
 
 const NEXT_PROPS = ['then', 'and', 'or'];
 const IS_DEBUG = String(window.location.host).indexOf('aus.aunty') > -1;
@@ -141,6 +142,8 @@ export function createGraph(markup) {
     startId: null
   };
   let currentNode = null;
+
+  smartquotes(doc.body);
 
   [...doc.body.children].forEach(el => {
     if (el.tagName === 'A' && el.hasAttribute('name')) {
