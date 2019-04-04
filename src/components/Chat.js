@@ -56,11 +56,20 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    // Scroll to at bottom (animated if possible) when messages are added
+    // Scroll to the bottom when messages are added, but only if the
+    // visitor isn't currenlty scrolling (including flick inertia)
     if (bottomRef.current) {
-      scrollIntoView(bottomRef.current, {
-        time: 500,
-        validTarget: target => target === ref.current
+      const initialScrollTop = ref.current.scrollTop;
+
+      requestAnimationFrame(() => {
+        if (initialScrollTop !== ref.current.scrollTop) {
+          return;
+        }
+
+        scrollIntoView(bottomRef.current, {
+          time: 500,
+          validTarget: target => target === ref.current
+        });
       });
     }
   }, [state.history.length, state.prompts.length, state.isHostComposing]);
