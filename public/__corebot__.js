@@ -1,4 +1,5 @@
 __corebot__ = {
+  id: 'DEV',
   title: 'Example Bot',
   text: /*html*/ `
     <a name="startTHENaORb"></a>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Sequenza from 'sequenza';
+import { track } from './utils/behaviour';
 
 export const Context = React.createContext({});
 
@@ -64,11 +65,21 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
   sequenza.start();
 }
 
+let sessionStartTime;
+let sessionNumPrompts;
+
 function reducer(state, action) {
   switch (action.type) {
     case ACTION_TYPES.OPEN_DIALOG:
+      sessionStartTime = Date.now();
+      sessionNumPrompts = 0;
+      track(state.id, 'session-start');
+
       return { ...state, isDialogOpen: true };
     case ACTION_TYPES.CLOSE_DIALOG:
+      track(state.id, 'session-prompts', sessionNumPrompts);
+      track(state.id, 'session-duration', Math.floor((Date.now() - sessionStartTime) / 10000) * 10);
+
       return { ...state, isDialogOpen: false };
     case ACTION_TYPES.HOST_COMPOSING:
       const history = state.history;
@@ -96,6 +107,8 @@ function reducer(state, action) {
       const nextGuestMessage = { markup, isGuest: true, box, parentBox };
 
       scheduleHostActivity(targetNodeId, state.graph, dispatch);
+      sessionNumPrompts++;
+      track(state.id, 'prompt-target', targetNodeId);
 
       return { ...state, prompts: [], history: state.history.concat([nextGuestMessage]) };
     default:
