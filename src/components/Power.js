@@ -83,7 +83,7 @@ export default function Power({ isOn, onClick }) {
       {isOn ? (
         <VisuallyHidden>{'Close the ABC News Bot'}</VisuallyHidden>
       ) : (
-        <label htmlFor={id}>{state.cta || DEFAULTS.CTA}</label>
+        <label htmlFor={id}>{state.history.length > 1 ? DEFAULTS.RESUME_CTA : state.cta || DEFAULTS.START_CTA}</label>
       )}
     </button>
   );
