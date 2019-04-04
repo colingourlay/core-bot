@@ -33,6 +33,8 @@ export default function Chat() {
     flex-direction: column;
     justify-content: flex-end;
     align-items: flex-start;
+    margin: 0;
+    padding: 0;
   `;
   const bottomClassName = useStyle`
     margin-top: 15px;
@@ -58,30 +60,28 @@ export default function Chat() {
   useEffect(() => {
     // Scroll to the bottom when messages are added, but only if the
     // visitor isn't currenlty scrolling (including flick inertia)
-    if (bottomRef.current) {
-      const initialScrollTop = ref.current.scrollTop;
+    const initialScrollTop = ref.current.scrollTop;
 
-      requestAnimationFrame(() => {
-        if (initialScrollTop !== ref.current.scrollTop) {
-          return;
-        }
+    requestAnimationFrame(() => {
+      if (initialScrollTop !== ref.current.scrollTop) {
+        return;
+      }
 
-        scrollIntoView(bottomRef.current, {
-          time: 500,
-          validTarget: target => target === ref.current
-        });
+      scrollIntoView(bottomRef.current, {
+        time: 500,
+        validTarget: target => target === ref.current
       });
-    }
+    });
   }, [state.history.length, state.prompts.length, state.isHostComposing]);
 
   return (
     <div ref={ref} className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Chat'}>
-      <div className={bubblesClassName}>
+      <ul className={bubblesClassName} role="log" aria-live="polite" aria-label="Chat Log" aria-atomic="false">
         {state.history.map((props, index) => (
           <Bubble key={index} isLast={index + 1 === state.history.length && state.prompts.length === 0} {...props} />
         ))}
         {state.isHostComposing && <Bubble key={'composing'} isComposer={true} />}
-      </div>
+      </ul>
       <Prompts />
       <div ref={bottomRef} className={bottomClassName} />
     </div>

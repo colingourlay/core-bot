@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStyle } from 'styled-hooks';
 
-export default function Message({ isInverted = false, markup }) {
+export default function Message({ isInverted = false, markup, label }) {
   const className = useStyle`
     margin: 12px 16px;
     color: ${isInverted ? '#fff' : '#000'};
@@ -61,6 +61,7 @@ export default function Message({ isInverted = false, markup }) {
   return (
     <div
       className={className}
+      aria-label={label}
       dangerouslySetInnerHTML={{ __html: markup }}
       data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Message'}
     />

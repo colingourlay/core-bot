@@ -71,9 +71,11 @@ export default function Card({ text, icon, action }) {
   return (
     <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Card'}>
       <div className={innerClassName}>
-        <VisuallyHidden>ABC News Chat Bot</VisuallyHidden>
         <h3>{widont(state.title)}</h3>
-        <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>{widont(state.cta || DEFAULTS.START_CTA)}</button>
+        <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>
+          {widont(state.cta || DEFAULTS.START_CTA)}
+          <VisuallyHidden>{`: ${state.title}`}</VisuallyHidden>
+        </button>
       </div>
       <svg className={iconClassName} xmlns="http://www.w3.org/2000/svg" width="30" height="29" aria-hidden>
         <path d="M30 18v11l-9-9H5a5 5 0 0 1-5-5V2a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v16z" />

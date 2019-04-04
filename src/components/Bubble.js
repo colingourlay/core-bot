@@ -26,9 +26,12 @@ export default function Bubble({
     box-sizing: content-box;
     margin: ${isGuest ? `16px 0 0 16px` : '32px 16px 0 0'};
     border-radius: ${isGuest ? '4px 0 0 12px' : ' 0 4px 12px 0'};
+    padding: 0;
     max-width: calc(100% - 16px);
     background-color: ${isGuest ? '#144f66' : '#fff'};
+    background-image: none;
     box-shadow: ${isGuest ? '0 5px 20px 0  rgba(20, 79, 102, 0.2)' : '0 5px 20px 0  rgba(20, 79, 102, 0.2)'};
+    list-style: none;
 
     &[data-is-host] {
       &[data-is-last] {
@@ -112,7 +115,7 @@ export default function Bubble({
   }, []);
 
   return (
-    <div
+    <li
       ref={ref}
       className={className}
       style={{ marginBottom: box && parentBox && isLast ? `${parentBox.height - box.height}px` : 0 }}
@@ -124,8 +127,12 @@ export default function Bubble({
       data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : `Bubble/${isGuest ? 'Guest' : 'Host'}`}
       {...props}
     >
-      {isComposer ? <Ellipsis /> : <Message isInverted={isGuest} markup={markup} />}
-    </div>
+      {isComposer ? (
+        <Ellipsis />
+      ) : (
+        <Message isInverted={isGuest} label={isGuest ? 'You said: ' : null} markup={markup} />
+      )}
+    </li>
   );
 }
 

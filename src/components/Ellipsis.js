@@ -33,7 +33,11 @@ export default function Ellipsis() {
     }
   `;
   return (
-    <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Ellipsis'}>
+    <div
+      className={className}
+      role="presentation"
+      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Ellipsis'}
+    >
       <span />
       <span />
       <span />

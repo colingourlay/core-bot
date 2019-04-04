@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import VisuallyHidden from '@reach/visually-hidden';
+import React, { useRef, useState } from 'react';
 import { useStyle } from 'styled-hooks';
 import { useContext, ACTION_TYPES } from '../state';
 import Message from './Message';
@@ -8,11 +9,15 @@ export default function Prompts() {
   const [chosenIndex, setChosenIndex] = useState(null);
   const { prompts } = state;
 
+  const ref = useRef();
   const className = useStyle`
     margin: 30px 8px 0;
 
-    &:not(:empty):before {
-      content: ${prompts.length > 1 ? `'Choose one'` : 'none'};
+    &[data-has-chosen] {
+      pointer-events: none;
+    }
+
+    & label {
       display: block;
       margin: 0 0 0 16px;
       color: #144f66;
@@ -23,12 +28,19 @@ export default function Prompts() {
       transition: opacity 0.25s;
     }
 
-    &[data-has-chosen] {
-      pointer-events: none;
+    &[data-has-chosen] label {
+      opacity: 0;
+    }
 
-      &:not(:empty):before {
-        opacity: 0;
-      }
+    & ol {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    & li {
+      margin: 0;
+      padding: 0;
     }
   `;
 
@@ -43,11 +55,11 @@ export default function Prompts() {
     text-align: left;
     transition: opacity 0.125s, background-color 0.125s;
 
-    [data-has-chosen] > &:not([data-is-chosen]) {
+    [data-has-chosen] &:not([data-is-chosen]) {
       opacity: 0;
     }
 
-    [data-has-chosen] > &[data-is-chosen] {
+    [data-has-chosen] &[data-is-chosen] {
       background-color: #144f66;
     }
   `;
@@ -57,52 +69,59 @@ export default function Prompts() {
   return (
     <div
       key={key}
+      ref={ref}
       className={className}
       data-has-chosen={chosenIndex !== null ? '' : null}
       data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Prompts'}
     >
-      {prompts.map(({ targetNodeId, markup }, index) => {
-        let hasChosenPrompt;
+      {prompts.length > 1 && <label role="pesentation">Choose one</label>}
+      <ol role="menu" aria-label={prompts.length ? 'Chat Prompts' : null} aria-live="polite" aria-atomic="false">
+        {prompts.map(({ targetNodeId, markup }, index) => {
+          let hasChosenPrompt;
 
-        function choosePrompt(event) {
-          if (hasChosenPrompt) {
-            return;
+          function choosePrompt(event) {
+            if (hasChosenPrompt) {
+              return;
+            }
+
+            hasChosenPrompt = true;
+
+            const el = event.currentTarget;
+            const box = el.getBoundingClientRect();
+            const parentBox = ref.current.getBoundingClientRect();
+            const action = {
+              type: ACTION_TYPES.CHOOSE_PROMPT,
+              data: {
+                targetNodeId,
+                markup,
+                box,
+                parentBox,
+                dispatch
+              }
+            };
+
+            setChosenIndex(index);
+            setTimeout(() => {
+              dispatch(action);
+              setTimeout(() => setChosenIndex(null), 250); // reset state
+            }, 125);
           }
 
-          hasChosenPrompt = true;
-
-          const el = event.currentTarget;
-          const box = el.getBoundingClientRect();
-          const parentBox = el.parentElement.getBoundingClientRect();
-          const action = {
-            type: ACTION_TYPES.CHOOSE_PROMPT,
-            data: {
-              targetNodeId,
-              markup,
-              box,
-              parentBox,
-              dispatch
-            }
-          };
-
-          setChosenIndex(index);
-          setTimeout(() => {
-            dispatch(action);
-            setTimeout(() => setChosenIndex(null), 250); // reset state
-          }, 125);
-        }
-
-        return (
-          <button
-            key={`${index}-of-${key}`}
-            className={promptClassName}
-            data-is-chosen={chosenIndex === index ? '' : null}
-            onClick={choosePrompt}
-          >
-            <Message isInverted markup={markup} />
-          </button>
-        );
-      })}
+          return (
+            <li key={`${index}-of-${key}`}>
+              <VisuallyHidden>{`Prompt ${index + 1}:`}</VisuallyHidden>
+              <button
+                className={promptClassName}
+                role="menuitem"
+                data-is-chosen={chosenIndex === index ? '' : null}
+                onClick={choosePrompt}
+              >
+                <Message isInverted markup={markup} />
+              </button>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }

@@ -10,7 +10,7 @@ __corebot__ = {
     <p>This is Answer A</p>
     <p>This has an emoji 💜. The next couple are only emoji</p>
     <p>️❤️💚💙</p>
-    <p>️😀😃😄😁😆😅😂🤣</p>
+    <p>️😀😃😄😁</p>
     <p>This ends with an emoji 💩</p>
     <p>This ends with an emoji and should span a couple of lines 💜</p>
     <p>This ends with an emoji and should definitely span more than a couple of lines 💜</p>
