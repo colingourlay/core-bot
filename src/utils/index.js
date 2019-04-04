@@ -229,7 +229,7 @@ export function articleDocumentToAppProps(doc) {
 
   const title = doc.title;
   const author = (doc.bylinePlain || '').trim();
-  const cta = doc.teaserTextPlain.indexOf('#') === 0 ? null : doc.teaserTextPlain.trim();
+  const cta = (x => (x.indexOf('#') === 0 ? null : x.trim()))(doc.teaserTextPlain || '');
 
   return { graph: createGraph(doc.text), title, author, cta };
 }

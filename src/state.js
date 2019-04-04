@@ -83,7 +83,8 @@ function reducer(state, action) {
     case ACTION_TYPES.HOST_MESSAGE:
       return { ...state, isHostComposing: false, history: state.history.concat([action.data]) };
     case ACTION_TYPES.HOST_START:
-      const firstGuestMessage = { markup: state.title, isGuest: true };
+      const startNodePrompt = state.graph.nodes[state.graph.startId].prompts[0];
+      const firstGuestMessage = { markup: startNodePrompt || state.title, isGuest: true };
 
       scheduleHostActivity(state.graph.startId, state.graph, action.data.dispatch);
 
