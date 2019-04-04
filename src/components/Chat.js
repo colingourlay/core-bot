@@ -2,7 +2,7 @@ import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import scrollIntoView from 'scroll-into-view';
 import { useStyle } from 'styled-hooks';
-import { useContext } from '../state';
+import { useContext, ACTION_TYPES } from '../state';
 import Bubble from './Bubble';
 import Prompts from './Prompts';
 
@@ -12,7 +12,7 @@ const SCROLL_INTO_VIEW_ARG = IS_SMOOTH_SCROLL_SUPPORTED
   : false;
 
 export default function Chat() {
-  const { state } = useContext();
+  const { state, dispatch } = useContext();
   const ref = useRef();
   const bottomRef = useRef();
   const className = useStyle`
@@ -45,6 +45,10 @@ export default function Chat() {
       ref.current.scrollTop = ref.current.scrollHeight;
       // Stop body from scrolling (helping the Dialog out a bit here)
       disableBodyScroll(ref.current);
+    }
+
+    if (!state.history.length) {
+      dispatch({ type: ACTION_TYPES.HOST_START, data: { dispatch } });
     }
 
     // Enable body scrolling ro resume on un-mount;

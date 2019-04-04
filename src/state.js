@@ -22,8 +22,9 @@ export const ACTION_TYPES = {
   CLOSE_DIALOG: 2,
   HOST_COMPOSING: 3,
   HOST_MESSAGE: 4,
-  UPDATE_PROMPTS: 5,
-  CHOOSE_PROMPT: 6
+  HOST_START: 5,
+  UPDATE_PROMPTS: 6,
+  CHOOSE_PROMPT: 7
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
@@ -81,6 +82,12 @@ function reducer(state, action) {
       return { ...state, isHostComposing: true, history };
     case ACTION_TYPES.HOST_MESSAGE:
       return { ...state, isHostComposing: false, history: state.history.concat([action.data]) };
+    case ACTION_TYPES.HOST_START:
+      const firstGuestMessage = { markup: state.title, isGuest: true };
+
+      scheduleHostActivity(state.graph.startId, state.graph, action.data.dispatch);
+
+      return { ...state, history: state.history.concat([firstGuestMessage]) };
     case ACTION_TYPES.UPDATE_PROMPTS:
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
@@ -101,9 +108,9 @@ function getInitialState(props) {
 
   return {
     ...props,
-    history: startNode.notes.map(message => ({ markup: message })),
+    history: [],
     isDialogOpen: false,
-    prompts: getNextPrompts(startNode, graph)
+    prompts: []
   };
 }
 
