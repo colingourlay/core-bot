@@ -53,6 +53,7 @@ export default function Prompts() {
     width: 100%;
     background-color: #000;
     text-align: left;
+    cursor: pointer;
     transition: opacity 0.125s, background-color 0.125s;
 
     [data-has-chosen] &:not([data-is-chosen]) {

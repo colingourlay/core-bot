@@ -31,6 +31,7 @@ export default function Power({ isOn, onClick }) {
     background-color: rgba(255, 255, 255, 0.85);
     box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.3);
     color: #000;
+    cursor: pointer;
     transition: opacity 0.25s, transform 0.5s;
 
     @media (min-width: 480px) {
