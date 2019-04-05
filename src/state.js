@@ -1,5 +1,6 @@
 import React from 'react';
 import Sequenza from 'sequenza';
+import Visibility from 'visibilityjs';
 import { track } from './utils/behaviour';
 
 export const Context = React.createContext({});
@@ -25,11 +26,13 @@ export const ACTION_TYPES = {
   HOST_MESSAGE: 4,
   HOST_START: 5,
   UPDATE_PROMPTS: 6,
-  CHOOSE_PROMPT: 7
+  CHOOSE_PROMPT: 7,
+  WINDOW_UNLOAD: 8
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
 export const CLOSE_DIALOG_ACTION = { type: ACTION_TYPES.CLOSE_DIALOG };
+export const WINDOW_UNLOAD_ACTION = { type: ACTION_TYPES.WINDOW_UNLOAD };
 
 function getNextHostMessages(node) {
   return node.notes.map(note => ({ markup: note }));
@@ -65,20 +68,26 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
   sequenza.start();
 }
 
-let sessionStartTime;
-let sessionNumPrompts;
+const session = {
+  hasStarted: false,
+  prompts: 0,
+  duration: 0,
+  durationUpdateInterval: null
+};
 
 function reducer(state, action) {
   switch (action.type) {
     case ACTION_TYPES.OPEN_DIALOG:
-      sessionStartTime = Date.now();
-      sessionNumPrompts = 0;
-      track(state.id, 'session-start');
+      if (!session.hasStarted) {
+        session.hasStarted = true;
+        track(state.id, 'session-start');
+      }
+
+      session.durationUpdateInterval = Visibility.every(1000, () => session.duration++);
 
       return { ...state, isDialogOpen: true };
     case ACTION_TYPES.CLOSE_DIALOG:
-      track(state.id, 'session-prompts', sessionNumPrompts);
-      track(state.id, 'session-duration', Math.floor((Date.now() - sessionStartTime) / 10000) * 10);
+      Visibility.stop(session.durationUpdateInterval);
 
       return { ...state, isDialogOpen: false };
     case ACTION_TYPES.HOST_COMPOSING:
@@ -107,10 +116,17 @@ function reducer(state, action) {
       const nextGuestMessage = { markup, isGuest: true, box, parentBox };
 
       scheduleHostActivity(targetNodeId, state.graph, dispatch);
-      sessionNumPrompts++;
+      session.prompts++;
       track(state.id, 'prompt-target', targetNodeId);
 
       return { ...state, prompts: [], history: state.history.concat([nextGuestMessage]) };
+    case ACTION_TYPES.WINDOW_UNLOAD:
+      if (session.hasStarted) {
+        track(state.id, 'session-prompts', session.prompts);
+        track(state.id, 'session-duration', Math.floor(session.duration / 5) * 5);
+      }
+
+      return state;
     default:
       throw new Error('Unrecognised action');
   }

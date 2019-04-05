@@ -53,16 +53,9 @@ export default function Chat() {
       dispatch({ type: ACTION_TYPES.HOST_START, data: { dispatch } });
     }
 
-    function onUnload(event) {
-      dispatch({ type: ACTION_TYPES.CLOSE_DIALOG }); // TODO: Update tracker to use navigator.sendBeacon()
-    }
-
-    window.addEventListener('unload', onUnload);
-
     return () => {
       // Enable body scrolling ro resume on un-mount;
       clearAllBodyScrollLocks();
-      window.removeEventListener('unload', onUnload);
     };
   }, []);
 
