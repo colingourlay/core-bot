@@ -6,6 +6,7 @@ import { parseContent, preloadEmoji } from '../content';
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
 const NEXT_PROPS = ['then', 'and', 'or'];
+const URL_CMID_PATTERN = /\/([0-9]+)(\/|([\?\#].*)?$|-[0-9]+x[0-9]+-)/;
 
 function validateGraph(graph) {
   const nodeIds = Object.keys(graph.nodes);
@@ -117,7 +118,7 @@ function createGraph(markup) {
       return;
     }
 
-    if (!currentNode || String(el.textContent).trim().length === 0) {
+    if (!currentNode || (el.children.length === 0 && String(el.textContent).trim().length === 0)) {
       return;
     }
 
@@ -181,4 +182,12 @@ export function widont(text) {
   const lastTwoWordsText = words.slice(-2).join(SP);
 
   return `${words.slice(0, -2).join(SP)} ${lastTwoWordsText.replace(' ', lastTwoWordsText.length > 15 ? SP : NBSP)}`;
+}
+
+export function urlToCMID(url) {
+  return (url.match(URL_CMID_PATTERN) || [])[1];
+}
+
+export function pickRendition(renditions) {
+  return (renditions.length === 1 ? renditions : renditions.filter(x => x.ratio === '3x2' && x.width > 300))[0];
 }

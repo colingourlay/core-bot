@@ -18,7 +18,11 @@ export default function Richtext({ markup }) {
     }
 
     & > li {
-      list-style-position: inside;
+      margin: 0 0 4px 16px;
+      padding: 0;
+      background: none;
+      list-style-position: outside;
+      list-style-type: disc;
     }
 
     & .only-emoji,

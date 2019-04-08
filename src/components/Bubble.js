@@ -95,11 +95,6 @@ export default function Bubble({
       color: ${isGuest ? 'inherit' : '#002aff'};
       text-decoration: ${isGuest ? 'underline' : 'none'};;
     }
-
-    & svg {
-      width: 30px;
-      height: 8px;
-    }
   `;
 
   const ref = useRef();

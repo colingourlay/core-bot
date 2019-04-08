@@ -1,7 +1,10 @@
 import capiFetch from '@abcnews/capi-fetch';
 import React from 'react';
 import twemoji from 'twemoji';
+import ArticleEmbed from './components/content/ArticleEmbed';
+import ImageEmbed from './components/content/ImageEmbed';
 import Richtext from './components/content/Richtext';
+import { pickRendition, urlToCMID } from './utils/index';
 import smartquotes from './utils/smartquotes';
 
 // https://reactnativecafe.com/emojis-in-javascript/#Conclusion
@@ -17,10 +20,15 @@ const TWEMOJI_PARSING_OPTIONS = {
 };
 
 const CONTENT_TYPES = {
-  RICHTEXT: 1
+  CAPI_UNRESOLVED: 1,
+  ARTICLE_EMBED: 2,
+  IMAGE_EMBED: 3,
+  RICHTEXT: 4
 };
 
 const CONTENT_COMPONENTS = {
+  [CONTENT_TYPES.ARTICLE_EMBED]: ArticleEmbed,
+  [CONTENT_TYPES.IMAGE_EMBED]: ImageEmbed,
   [CONTENT_TYPES.RICHTEXT]: Richtext
 };
 
@@ -32,18 +40,71 @@ let nextId = 0;
 export function parseContent(el) {
   let props;
   let type;
+  let matchedEl;
 
-  if (false) {
-    // We only have RICHTEXT for now:
+  if (
+    (matchedEl = el.querySelector('a[target="_self"]')) &&
+    el.firstChild === matchedEl &&
+    el.lastChild === matchedEl
+  ) {
+    props = {
+      cmid: urlToCMID(matchedEl.href)
+    };
+    type = CONTENT_TYPES.CAPI_UNRESOLVED;
   } else {
     smartquotes(el);
     props = { markup: formatEmoji(el.innerHTML) };
     type = CONTENT_TYPES.RICHTEXT;
   }
 
-  contentStore[++nextId] = { type, props };
+  const content = { type, props };
+
+  if (type === CONTENT_TYPES.CAPI_UNRESOLVED) {
+    resolveUsingCAPI(content);
+  }
+
+  contentStore[++nextId] = content;
 
   return nextId;
+}
+
+function resolveUsingCAPI(content) {
+  capiFetch(content.props.cmid, (err, doc) => {
+    if (err) {
+      return console.error(new Error(`Could not fetch document with CMID: ${content.props.cmid}`));
+    }
+    switch (doc.docType) {
+      case 'Article':
+        const thumbnailRendition = doc.thumbnailLink ? pickRendition(doc.thumbnailLink.media) : null;
+
+        content.props = {
+          url: doc.canonicalUrl,
+          title: doc.title,
+          thumbnail: thumbnailRendition
+            ? {
+                src: thumbnailRendition.url,
+                aspectRatio: thumbnailRendition.height / thumbnailRendition.width
+              }
+            : null
+        };
+        content.type = CONTENT_TYPES.ARTICLE_EMBED;
+        break;
+      case 'Image':
+      case 'ImageProxy':
+      case 'CustomImage':
+        const rendition = pickRendition(doc.media);
+
+        content.props = {
+          src: rendition.url,
+          alt: doc.alt || doc.title,
+          aspectRatio: rendition.height / rendition.width
+        };
+        content.type = CONTENT_TYPES.IMAGE_EMBED;
+        break;
+      default:
+        break;
+    }
+  });
 }
 
 export function renderContent(id) {
@@ -56,7 +117,7 @@ export function renderContent(id) {
   const { type, props } = content;
   const ContentComponent = CONTENT_COMPONENTS[type];
 
-  return <ContentComponent {...props} />;
+  return ContentComponent ? <ContentComponent {...props} /> : null;
 }
 
 export function preloadEmoji() {
