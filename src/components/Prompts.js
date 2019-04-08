@@ -1,8 +1,8 @@
 import VisuallyHidden from '@reach/visually-hidden';
 import React, { useRef, useState } from 'react';
 import { useStyle } from 'styled-hooks';
+import { renderContent } from '../content';
 import { useContext, ACTION_TYPES } from '../state';
-import Message from './Message';
 
 export default function Prompts() {
   const { state, dispatch } = useContext();
@@ -52,6 +52,7 @@ export default function Prompts() {
     padding: 0;
     width: 100%;
     background-color: #000;
+    color: #fff;
     text-align: left;
     cursor: pointer;
     transition: opacity 0.125s, background-color 0.125s;
@@ -77,7 +78,7 @@ export default function Prompts() {
     >
       {prompts.length > 1 && <label role="pesentation">Choose one</label>}
       <ol role="menu" aria-label={prompts.length ? 'Chat Prompts' : null} aria-live="polite" aria-atomic="false">
-        {prompts.map(({ targetNodeId, markup }, index) => {
+        {prompts.map(({ contentId, targetNodeId }, index) => {
           let hasChosenPrompt;
 
           function choosePrompt(event) {
@@ -93,8 +94,8 @@ export default function Prompts() {
             const action = {
               type: ACTION_TYPES.CHOOSE_PROMPT,
               data: {
+                contentId,
                 targetNodeId,
-                markup,
                 box,
                 parentBox,
                 dispatch
@@ -117,7 +118,7 @@ export default function Prompts() {
                 data-is-chosen={chosenIndex === index ? '' : null}
                 onClick={choosePrompt}
               >
-                <Message isInverted markup={markup} />
+                {renderContent(contentId)}
               </button>
             </li>
           );

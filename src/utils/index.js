@@ -1,80 +1,11 @@
 import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
-import twemoji from 'twemoji';
 import { name } from '../../package';
 import { IS_DEBUG } from '../constants';
-import smartquotes from './smartquotes';
+import { parseContent, preloadEmoji } from '../content';
 
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
 const NEXT_PROPS = ['then', 'and', 'or'];
-// https://reactnativecafe.com/emojis-in-javascript/#Conclusion
-const EMOJI_PATTERN = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
-const EMOJI_PRESENTATION_PATTERN = /\uFE0F/g;
-const BEGINS_WITH_EMOJI_PATTERN = new RegExp(`^${EMOJI_PATTERN.source}`);
-const ENDS_WITH_EMOJI_PATTERN = new RegExp(`${EMOJI_PATTERN.source}$`);
-const ESCAPED_UNICODE_CHARACTERS_PATTERN = /%u\w+/g;
-const EMOJI_IMAGE_URL_PATTERN = /src="([^"]+)"/g;
-const TWEMOJI_PARSING_OPTIONS = {
-  folder: 'svg',
-  ext: '.svg'
-};
-
-const emojiImageCache = {};
-
-function parseMessage(node) {
-  return node.innerHTML;
-}
-
-function replaceEmoji(markup) {
-  return twemoji.parse(markup, TWEMOJI_PARSING_OPTIONS);
-}
-
-function formatEmoji(markup, emojiUsed) {
-  const input = markup;
-  const matchedEmoji = input.match(EMOJI_PATTERN);
-  const indexOfBeginningEmoji = input.search(BEGINS_WITH_EMOJI_PATTERN);
-  const indexOfEndingEmoji = input.search(ENDS_WITH_EMOJI_PATTERN);
-
-  if (matchedEmoji) {
-    const escaped = escape(input);
-    const remaining = escaped.replace(ESCAPED_UNICODE_CHARACTERS_PATTERN, '');
-
-    if (indexOfBeginningEmoji === 0 && matchedEmoji.length === 1) {
-      const first = input.slice(0, matchedEmoji[0].length);
-      const last = input.slice(matchedEmoji[0].length);
-
-      markup = `<span class="has-icon-emoji">
-        <span class="icon-emoji">${replaceEmoji(first)}</span>
-        <span>${last}</span>
-      </span>`;
-    } else if (indexOfEndingEmoji > -1 && matchedEmoji.length === 1) {
-      const first = input.slice(0, indexOfEndingEmoji);
-      const last = input.slice(indexOfEndingEmoji);
-
-      markup = `<span class="has-icon-emoji">
-        <span>${first}</span>
-        <span class="icon-emoji">${replaceEmoji(last)}</span>
-      </span>`;
-    } else {
-      markup = replaceEmoji(input);
-
-      if (remaining.length === 0 && matchedEmoji.length < 4) {
-        markup = `<span class="only-emoji">${markup}</span>`;
-      }
-    }
-
-    // Cache emoji image URLs
-    let result;
-    while ((result = EMOJI_IMAGE_URL_PATTERN.exec(markup)) !== null) {
-      emojiUsed.add(result[1]);
-    }
-
-    // Safari doesn't always use presentation selectors, so clean them out
-    markup = markup.replace(EMOJI_PRESENTATION_PATTERN, '');
-  }
-
-  return markup;
-}
 
 function validateGraph(graph) {
   const nodeIds = Object.keys(graph.nodes);
@@ -139,14 +70,11 @@ function validateGraph(graph) {
 function createGraph(markup) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(markup, 'text/html');
-  const emojiUsed = new Set();
   const graph = {
     nodes: {},
     startId: null
   };
   let currentNode = null;
-
-  smartquotes(doc.body);
 
   [...doc.body.children].forEach(el => {
     if (el.tagName === 'A' && el.hasAttribute('name')) {
@@ -194,18 +122,18 @@ function createGraph(markup) {
     }
 
     if (el.tagName.indexOf('H') === 0) {
-      currentNode.prompts.push(formatEmoji(el.innerHTML, emojiUsed));
+      const promptSourceEl = document.createElement('p');
+
+      promptSourceEl.textContent = el.textContent;
+      currentNode.prompts.push(parseContent(promptSourceEl));
     } else {
-      currentNode.notes.push(formatEmoji(parseMessage(el), emojiUsed));
+      currentNode.notes.push(parseContent(el.cloneNode(true)));
     }
   });
 
   // Preload and cache emoji images
   setTimeout(() => {
-    [...emojiUsed].forEach(imageURL => {
-      emojiImageCache[imageURL] = new Image();
-      emojiImageCache[imageURL].src = imageURL;
-    });
+    preloadEmoji();
   }, 1000);
 
   if (IS_DEBUG) {
@@ -231,8 +159,21 @@ export function articleDocumentToAppProps(doc) {
   const title = doc.title;
   const author = (doc.bylinePlain || '').trim();
   const cta = (x => (x.indexOf('#') === 0 ? null : x.trim()))(doc.teaserTextPlain || '');
+  const titleContentSourceEl = document.createElement('p');
+  const authorContentSourceEl = document.createElement('p');
 
-  return { id, title, author, cta, graph: createGraph(doc.text) };
+  titleContentSourceEl.textContent = title;
+  authorContentSourceEl.textContent = author;
+
+  return {
+    id,
+    title,
+    author,
+    cta,
+    titleContentId: parseContent(titleContentSourceEl),
+    authorContentId: parseContent(authorContentSourceEl),
+    graph: createGraph(doc.text)
+  };
 }
 
 export function widont(text) {

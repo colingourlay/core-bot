@@ -34,31 +34,31 @@ export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
 export const CLOSE_DIALOG_ACTION = { type: ACTION_TYPES.CLOSE_DIALOG };
 export const WINDOW_UNLOAD_ACTION = { type: ACTION_TYPES.WINDOW_UNLOAD };
 
-function getNextHostMessages(node) {
-  return node.notes.map(note => ({ markup: note }));
+function getNextHostNotes(node) {
+  return node.notes.map(contentId => ({ contentId }));
 }
 
 function getNextPrompts(node, graph) {
   return node.next.reduce(
-    (memo, id) => memo.concat(graph.nodes[id].prompts.map(prompt => ({ targetNodeId: id, markup: prompt }))),
+    (memo, id) => memo.concat(graph.nodes[id].prompts.map(contentId => ({ contentId, targetNodeId: id }))),
     []
   );
 }
 
 function scheduleHostActivity(nodeId, graph, dispatch) {
   const targetNode = graph.nodes[nodeId];
-  const nextHostMessages = getNextHostMessages(targetNode, graph);
+  const nextHostNotes = getNextHostNotes(targetNode, graph);
   const nextPrompts = getNextPrompts(targetNode, graph);
   const sequenza = new Sequenza();
 
-  nextHostMessages.forEach((message, index) => {
+  nextHostNotes.forEach((note, index) => {
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
       delay: index ? 750 : 1250
     });
     sequenza.queue({
-      callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: message }),
-      delay: Math.min(1250 + (message.markup ? message.markup.split(' ').length * 100 : 1000), 3000)
+      callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: note }),
+      delay: 2000
     });
   });
   sequenza.queue({
@@ -92,11 +92,11 @@ function reducer(state, action) {
       return { ...state, isDialogOpen: false };
     case ACTION_TYPES.HOST_COMPOSING:
       const history = state.history;
-      const lastMessage = history[history.length - 1];
+      const mostRecent = history[history.length - 1];
 
-      if (lastMessage.isGuest) {
-        delete lastMessage.box;
-        delete lastMessage.parentBox;
+      if (mostRecent.isGuest) {
+        delete mostRecent.box;
+        delete mostRecent.parentBox;
       }
 
       return { ...state, isHostComposing: true, history };
@@ -104,22 +104,22 @@ function reducer(state, action) {
       return { ...state, isHostComposing: false, history: state.history.concat([action.data]) };
     case ACTION_TYPES.HOST_START:
       const startNodePrompt = state.graph.nodes[state.graph.startId].prompts[0];
-      const firstGuestMessage = { markup: startNodePrompt || state.title, isGuest: true };
+      const firstGuestPrompt = { contentId: startNodePrompt || state.titleContentId, isGuest: true };
 
       scheduleHostActivity(state.graph.startId, state.graph, action.data.dispatch);
 
-      return { ...state, history: state.history.concat([firstGuestMessage]) };
+      return { ...state, history: state.history.concat([firstGuestPrompt]) };
     case ACTION_TYPES.UPDATE_PROMPTS:
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
-      const { targetNodeId, markup, box, parentBox, dispatch } = action.data;
-      const nextGuestMessage = { markup, isGuest: true, box, parentBox };
+      const { contentId, targetNodeId, markup, box, parentBox, dispatch } = action.data;
+      const nextGuestPrompt = { contentId, isGuest: true, box, parentBox };
 
       scheduleHostActivity(targetNodeId, state.graph, dispatch);
       session.prompts++;
       track(state.id, 'prompt-target', targetNodeId);
 
-      return { ...state, prompts: [], history: state.history.concat([nextGuestMessage]) };
+      return { ...state, prompts: [], history: state.history.concat([nextGuestPrompt]) };
     case ACTION_TYPES.WINDOW_UNLOAD:
       if (session.hasStarted) {
         track(state.id, 'session-prompts', session.prompts);

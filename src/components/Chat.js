@@ -60,7 +60,7 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    // Scroll to the bottom when messages are added, but only if the
+    // Scroll to the bottom when content is added, but only if the
     // visitor isn't currenlty scrolling (including flick inertia)
     const initialScrollTop = ref.current.scrollTop;
 

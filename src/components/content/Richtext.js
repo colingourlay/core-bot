@@ -1,19 +1,13 @@
 import React from 'react';
 import { useStyle } from 'styled-hooks';
 
-export default function Message({ isInverted = false, markup, label }) {
+export default function Richtext({ markup }) {
   const className = useStyle`
     margin: 12px 16px;
-    color: ${isInverted ? '#fff' : '#000'};
     font-family: ABCSans;
     font-size: 15px;
     line-height: 1.5;
     letter-spacing: 0.25px;
-  
-    & a {
-      color: ${isInverted ? 'inherit' : '#002aff'};
-      text-decoration: ${isInverted ? 'underline' : 'none'};;
-    }
 
     & > :first-child {
       margin-top: 0;
@@ -61,9 +55,8 @@ export default function Message({ isInverted = false, markup, label }) {
   return (
     <div
       className={className}
-      aria-label={label}
       dangerouslySetInnerHTML={{ __html: markup }}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Message'}
+      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Richtext'}
     />
   );
 }

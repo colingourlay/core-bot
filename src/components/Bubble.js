@@ -1,15 +1,15 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import Ellipsis from './Ellipsis';
-import Message from './Message';
 import { DEFAULTS } from '../constants';
+import { renderContent } from '../content';
 import { useContext } from '../state';
 
 const CUBIC_BEZIER_EASING = 'cubic-bezier(0.25, 0.5, 0.25, 1)';
 const TRANSPARENT_BOX_SHADOW = '0 5px 20px 0  rgba(20, 79, 102, 0)';
 
 export default function Bubble({
-  markup,
+  contentId,
   isGuest = false,
   box,
   parentBox,
@@ -31,6 +31,7 @@ export default function Bubble({
     background-color: ${isGuest ? '#144f66' : '#fff'};
     background-image: none;
     box-shadow: ${isGuest ? '0 5px 20px 0  rgba(20, 79, 102, 0.2)' : '0 5px 20px 0  rgba(20, 79, 102, 0.2)'};
+    color: ${isGuest ? '#fff' : '#000'};
     list-style: none;
 
     &[data-is-host] {
@@ -90,6 +91,11 @@ export default function Bubble({
       }
     }
 
+    & a {
+      color: ${isGuest ? 'inherit' : '#002aff'};
+      text-decoration: ${isGuest ? 'underline' : 'none'};;
+    }
+
     & svg {
       width: 30px;
       height: 8px;
@@ -127,11 +133,7 @@ export default function Bubble({
       data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : `Bubble/${isGuest ? 'Guest' : 'Host'}`}
       {...props}
     >
-      {isComposer ? (
-        <Ellipsis />
-      ) : (
-        <Message isInverted={isGuest} label={isGuest ? 'You said: ' : null} markup={markup} />
-      )}
+      {isComposer ? <Ellipsis /> : renderContent(contentId)}
     </li>
   );
 }
