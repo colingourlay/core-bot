@@ -18,7 +18,7 @@ const rootEl = document.querySelector('a[name^="corebot"]');
 const [, coreBotId] = rootEl.getAttribute('name').match(/corebot(\d+)?/) || [];
 
 if (!coreBotId) {
-  throw new Error('No Core Bot ID found');
+  throw new Error(`No Core Bot ID found`);
 }
 
 let appProps;

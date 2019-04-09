@@ -140,7 +140,7 @@ export function renderContent(id) {
 }
 
 export function preloadEmoji() {
-  [...emojiUsed].forEach(imageURL => {
+  Array.from(emojiUsed).forEach(imageURL => {
     emojiImageCache[imageURL] = new Image();
     emojiImageCache[imageURL].src = imageURL;
   });

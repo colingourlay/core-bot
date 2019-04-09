@@ -77,7 +77,7 @@ function createGraph(markup) {
   };
   let currentNode = null;
 
-  [...doc.body.children].forEach(el => {
+  Array.from(doc.body.children).forEach(el => {
     if (el.tagName === 'A' && el.hasAttribute('name')) {
       const [, id, propsString] = el.getAttribute('name').match(/([a-z][a-z0-9]*)([A-Z].*)?/) || [];
 
