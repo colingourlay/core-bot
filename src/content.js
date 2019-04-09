@@ -2,6 +2,7 @@ import capiFetch from '@abcnews/capi-fetch';
 import React from 'react';
 import twemoji from 'twemoji';
 import ArticleEmbed from './components/content/ArticleEmbed';
+import GIFEmbed, { GIF_URL_PATTERNS, resolveGIFEmbedContentProps } from './components/content/GIFEmbed';
 import ImageEmbed from './components/content/ImageEmbed';
 import Richtext from './components/content/Richtext';
 import { pickRendition, urlToCMID } from './utils/index';
@@ -22,12 +23,14 @@ const TWEMOJI_PARSING_OPTIONS = {
 const CONTENT_TYPES = {
   CAPI_UNRESOLVED: 1,
   ARTICLE_EMBED: 2,
-  IMAGE_EMBED: 3,
-  RICHTEXT: 4
+  GIF_EMBED: 3,
+  IMAGE_EMBED: 4,
+  RICHTEXT: 5
 };
 
 const CONTENT_COMPONENTS = {
   [CONTENT_TYPES.ARTICLE_EMBED]: ArticleEmbed,
+  [CONTENT_TYPES.GIF_EMBED]: GIFEmbed,
   [CONTENT_TYPES.IMAGE_EMBED]: ImageEmbed,
   [CONTENT_TYPES.RICHTEXT]: Richtext
 };
@@ -38,19 +41,26 @@ const contentStore = {};
 let nextId = 0;
 
 export function parseContent(el) {
+  const soleLinkEl =
+    el.children.length && el.firstChild.tagName === 'A' && el.firstChild === el.lastChild && el.firstChild;
+  const soleLinkHref = soleLinkEl && soleLinkEl.getAttribute('href');
   let props;
   let type;
-  let matchedEl;
 
-  if (
-    (matchedEl = el.querySelector('a[target="_self"]')) &&
-    el.firstChild === matchedEl &&
-    el.lastChild === matchedEl
-  ) {
+  if (soleLinkEl && soleLinkEl.target === '_self') {
     props = {
-      cmid: urlToCMID(matchedEl.href)
+      cmid: urlToCMID(soleLinkEl.href)
     };
     type = CONTENT_TYPES.CAPI_UNRESOLVED;
+  } else if (
+    soleLinkEl &&
+    (soleLinkHref.match(GIF_URL_PATTERNS.GFYCAT) || soleLinkHref.match(GIF_URL_PATTERNS.GIPHY))
+  ) {
+    props = {
+      url: soleLinkHref
+    };
+    resolveGIFEmbedContentProps(props);
+    type = CONTENT_TYPES.GIF_EMBED;
   } else {
     smartquotes(el);
     props = { markup: formatEmoji(el.innerHTML) };

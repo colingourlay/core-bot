@@ -8,6 +8,7 @@ __corebot__ = {
     <p>You'll be able to choose Question A or Question B</p>
     <a name="aTHENb"></a>
     <h2>Question A</h2> 
+    <p><a href="https://giphy.com/gifs/shaq-shimmy-UO5elnTqo4vSg/">[gif]</a></p>
     <p>This is Answer A</p>
     <p>This has an emoji 💜. The next couple are only emoji</p>
     <p>️❤️💚💙</p>
@@ -18,6 +19,7 @@ __corebot__ = {
     <p>This ends with an emoji 💜 but also has one earlier 💜</p>
     <a name="bTHENa"></a>
     <h2>💜 Question B</h2>
+    <p><a href="https://gfycat.com/infamousmeagerhackee">[gif]</a></p>
     <p>This is Answer B</p>
   `
 };
