@@ -1,9 +1,9 @@
 import capiFetch from '@abcnews/capi-fetch';
 import React from 'react';
 import twemoji from 'twemoji';
-import ArticleEmbed from './components/content/ArticleEmbed';
 import GIFEmbed, { GIF_URL_PATTERNS, resolveGIFEmbedContentProps } from './components/content/GIFEmbed';
 import ImageEmbed from './components/content/ImageEmbed';
+import LinkEmbed from './components/content/LinkEmbed';
 import Richtext from './components/content/Richtext';
 import VideoEmbed from './components/content/VideoEmbed';
 import { pickRendition, urlToCMID } from './utils/index';
@@ -23,19 +23,19 @@ const TWEMOJI_PARSING_OPTIONS = {
 
 const CONTENT_TYPES = {
   CAPI_UNRESOLVED: 1,
-  ARTICLE_EMBED: 2,
-  GIF_EMBED: 3,
-  IMAGE_EMBED: 4,
-  VIDEO_EMBED: 5,
-  RICHTEXT: 6
+  GIF_EMBED: 2,
+  IMAGE_EMBED: 3,
+  LINK_EMBED: 4,
+  RICHTEXT: 5,
+  VIDEO_EMBED: 6
 };
 
 const CONTENT_COMPONENTS = {
-  [CONTENT_TYPES.ARTICLE_EMBED]: ArticleEmbed,
   [CONTENT_TYPES.GIF_EMBED]: GIFEmbed,
   [CONTENT_TYPES.IMAGE_EMBED]: ImageEmbed,
-  [CONTENT_TYPES.VIDEO_EMBED]: VideoEmbed,
-  [CONTENT_TYPES.RICHTEXT]: Richtext
+  [CONTENT_TYPES.LINK_EMBED]: LinkEmbed,
+  [CONTENT_TYPES.RICHTEXT]: Richtext,
+  [CONTENT_TYPES.VIDEO_EMBED]: VideoEmbed
 };
 
 const emojiImageCache = {};
@@ -44,37 +44,34 @@ const contentStore = {};
 let nextId = 0;
 
 export function parseContent(el) {
+  const content = { type: CONTENT_TYPES.RICHTEXT, props: null };
   const soleLinkEl =
     el.children.length && el.firstChild.tagName === 'A' && el.firstChild === el.lastChild && el.firstChild;
   const soleLinkHref = soleLinkEl && soleLinkEl.getAttribute('href');
-  let props;
-  let type;
 
-  if (soleLinkEl && soleLinkEl.target === '_self') {
-    props = {
-      cmid: urlToCMID(soleLinkEl.href),
-      markup: el.innerHTML
-    };
-    type = CONTENT_TYPES.CAPI_UNRESOLVED;
-  } else if (
-    soleLinkEl &&
-    (soleLinkHref.match(GIF_URL_PATTERNS.GFYCAT) || soleLinkHref.match(GIF_URL_PATTERNS.GIPHY))
-  ) {
-    props = {
-      url: soleLinkHref
-    };
-    resolveGIFEmbedContentProps(props);
-    type = CONTENT_TYPES.GIF_EMBED;
+  if (soleLinkEl) {
+    if (soleLinkEl.target === '_self') {
+      content.type = CONTENT_TYPES.CAPI_UNRESOLVED;
+      content.props = {
+        cmid: urlToCMID(soleLinkEl.href),
+        markup: el.innerHTML
+      };
+      resolveUsingCAPI(content);
+    } else if (soleLinkHref.match(GIF_URL_PATTERNS.GFYCAT) || soleLinkHref.match(GIF_URL_PATTERNS.GIPHY)) {
+      content.type = CONTENT_TYPES.GIF_EMBED;
+      content.props = {
+        url: soleLinkHref
+      };
+      resolveGIFEmbedContentProps(content.props);
+    } else {
+      content.type = CONTENT_TYPES.LINK_EMBED;
+      content.props = {
+        url: soleLinkHref
+      };
+    }
   } else {
     smartquotes(el);
-    props = { markup: formatEmoji(el.innerHTML) };
-    type = CONTENT_TYPES.RICHTEXT;
-  }
-
-  const content = { type, props };
-
-  if (type === CONTENT_TYPES.CAPI_UNRESOLVED) {
-    resolveUsingCAPI(content);
+    content.props = { markup: formatEmoji(el.innerHTML) };
   }
 
   contentStore[++nextId] = content;
@@ -94,14 +91,10 @@ function resolveUsingCAPI(content) {
         content.props = {
           url: doc.canonicalUrl,
           title: doc.title,
-          thumbnail: thumbnailRendition
-            ? {
-                src: thumbnailRendition.url,
-                aspectRatio: thumbnailRendition.height / thumbnailRendition.width
-              }
-            : null
+          imageSrc: thumbnailRendition ? thumbnailRendition.url : null,
+          imageAspectRatio: thumbnailRendition ? thumbnailRendition.height / thumbnailRendition.width : null
         };
-        content.type = CONTENT_TYPES.ARTICLE_EMBED;
+        content.type = CONTENT_TYPES.LINK_EMBED;
         break;
       case 'Image':
       case 'ImageProxy':

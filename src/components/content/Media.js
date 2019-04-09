@@ -9,12 +9,12 @@ export default function Media({ aspectRatio, children }) {
     width: 280px;
     max-width: 100%;
 
-    &:first-child {
+    &:first-of-type {
       border-top-left-radius: inherit;
       border-top-right-radius: inherit;
     }
 
-    &:last-child {
+    &:last-of-type {
       border-bottom-left-radius: inherit;
       border-bottom-right-radius: inherit;
     }
@@ -26,6 +26,7 @@ export default function Media({ aspectRatio, children }) {
       border-radius: inherit;
       width: 100%;
       height: 100%;
+      object-fit: cover;
     }
   `;
 
