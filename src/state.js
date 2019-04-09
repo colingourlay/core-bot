@@ -27,7 +27,8 @@ export const ACTION_TYPES = {
   HOST_START: 5,
   UPDATE_PROMPTS: 6,
   CHOOSE_PROMPT: 7,
-  WINDOW_UNLOAD: 8
+  EXIT_LINK: 8,
+  WINDOW_UNLOAD: 9
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
@@ -120,6 +121,10 @@ function reducer(state, action) {
       track(state.id, 'prompt-target', targetNodeId);
 
       return { ...state, prompts: [], history: state.history.concat([nextGuestPrompt]) };
+    case ACTION_TYPES.EXIT_LINK:
+      track(state.id, 'exit-link', action.data);
+
+      return state;
     case ACTION_TYPES.WINDOW_UNLOAD:
       if (session.hasStarted) {
         track(state.id, 'session-prompts', session.prompts);
