@@ -5,6 +5,7 @@ import ArticleEmbed from './components/content/ArticleEmbed';
 import GIFEmbed, { GIF_URL_PATTERNS, resolveGIFEmbedContentProps } from './components/content/GIFEmbed';
 import ImageEmbed from './components/content/ImageEmbed';
 import Richtext from './components/content/Richtext';
+import VideoEmbed from './components/content/VideoEmbed';
 import { pickRendition, urlToCMID } from './utils/index';
 import smartquotes from './utils/smartquotes';
 
@@ -25,13 +26,15 @@ const CONTENT_TYPES = {
   ARTICLE_EMBED: 2,
   GIF_EMBED: 3,
   IMAGE_EMBED: 4,
-  RICHTEXT: 5
+  VIDEO_EMBED: 5,
+  RICHTEXT: 6
 };
 
 const CONTENT_COMPONENTS = {
   [CONTENT_TYPES.ARTICLE_EMBED]: ArticleEmbed,
   [CONTENT_TYPES.GIF_EMBED]: GIFEmbed,
   [CONTENT_TYPES.IMAGE_EMBED]: ImageEmbed,
+  [CONTENT_TYPES.VIDEO_EMBED]: VideoEmbed,
   [CONTENT_TYPES.RICHTEXT]: Richtext
 };
 
@@ -49,7 +52,8 @@ export function parseContent(el) {
 
   if (soleLinkEl && soleLinkEl.target === '_self') {
     props = {
-      cmid: urlToCMID(soleLinkEl.href)
+      cmid: urlToCMID(soleLinkEl.href),
+      markup: el.innerHTML
     };
     type = CONTENT_TYPES.CAPI_UNRESOLVED;
   } else if (
@@ -102,16 +106,28 @@ function resolveUsingCAPI(content) {
       case 'Image':
       case 'ImageProxy':
       case 'CustomImage':
-        const rendition = pickRendition(doc.media);
+        const imageRendition = pickRendition(doc.media);
 
         content.props = {
-          src: rendition.url,
+          src: imageRendition.url,
           alt: doc.alt || doc.title,
-          aspectRatio: rendition.height / rendition.width
+          aspectRatio: imageRendition.height / imageRendition.width
         };
         content.type = CONTENT_TYPES.IMAGE_EMBED;
         break;
+      case 'Video':
+        const videoRendition = pickRendition(doc.renditions);
+
+        content.props = {
+          videoSrc: videoRendition.url,
+          posterSrc: doc.thumbnailLink ? doc.thumbnailLink.media[0].url : null,
+          alt: doc.alt || doc.title,
+          aspectRatio: videoRendition.height / videoRendition.width
+        };
+        content.type = CONTENT_TYPES.VIDEO_EMBED;
+        break;
       default:
+        content.type = CONTENT_TYPES.RICHTEXT;
         break;
     }
   });

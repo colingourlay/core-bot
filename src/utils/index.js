@@ -189,5 +189,7 @@ export function urlToCMID(url) {
 }
 
 export function pickRendition(renditions) {
-  return (renditions.length === 1 ? renditions : renditions.filter(x => x.ratio === '3x2' && x.width > 300))[0];
+  return (renditions.length === 1
+    ? renditions
+    : renditions.filter(x => (x.ratio ? x.ratio === '3x2' : true) && x.width > 400))[0];
 }

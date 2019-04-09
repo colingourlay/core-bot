@@ -5,7 +5,7 @@ import Sizer from './Sizer';
 export default function Media({ aspectRatio, children }) {
   const className = useStyle`
     position: relative;
-    border-radius: inherit;
+    overflow: hidden;
     width: 280px;
     max-width: 100%;
 
