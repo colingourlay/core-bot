@@ -33,7 +33,7 @@ export default function ImageEmbed({ src, alt, aspectRatio }) {
 
   return (
     <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Image'}>
-      <img src={src} alt={alt || null} onLoad={() => setIsLoaded(true)} />
+      <img src={src} alt={alt || null} title={alt || null} onLoad={() => setIsLoaded(true)} />
     </div>
   );
 }
