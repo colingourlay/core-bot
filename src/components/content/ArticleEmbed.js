@@ -5,8 +5,7 @@ import ImageEmbed from './ImageEmbed';
 export default function ArticleEmbed({ url, title, thumbnail }) {
   const className = useStyle`
     display: block;
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
+    border-radius: inherit;
     width: 280px;
     max-width: 100%;
     cursor: pointer;

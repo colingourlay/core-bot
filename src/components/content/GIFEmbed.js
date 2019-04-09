@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useStyle } from 'styled-hooks';
 import ImageEmbed from './ImageEmbed';
+import VideoEmbed from './VideoEmbed';
 
-export default function GIFEmbed({ animatedSrc, stillSrc, alt, aspectRatio, color }) {
+export default function GIFEmbed({ animatedSrc, stillSrc, videoSrc, alt, aspectRatio, color }) {
   const [isPlaying, setIsPlaying] = useState(true);
   const className = useStyle`
     display: block;
@@ -10,8 +11,6 @@ export default function GIFEmbed({ animatedSrc, stillSrc, alt, aspectRatio, colo
     border: 0;
     border-radius: inherit;
     padding: 0;
-    width: 280px;
-    max-width: 100%;
     cursor: pointer;
 
     & svg {
@@ -30,7 +29,18 @@ export default function GIFEmbed({ animatedSrc, stillSrc, alt, aspectRatio, colo
       onClick={() => setIsPlaying(!isPlaying)}
       data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'GIFEmbed'}
     >
-      <ImageEmbed src={isPlaying ? animatedSrc : stillSrc} alt={alt} aspectRatio={aspectRatio} />
+      {videoSrc ? (
+        <VideoEmbed
+          posterSrc={stillSrc}
+          videoSrc={videoSrc}
+          alt={alt}
+          aspectRatio={aspectRatio}
+          isGIF
+          isPlaying={isPlaying}
+        />
+      ) : (
+        <ImageEmbed src={isPlaying ? animatedSrc : stillSrc} alt={alt} aspectRatio={aspectRatio} />
+      )}
       <svg role="presentation" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
         {isPlaying ? (
           <path d="M5,3 L9,3 L9,21 L5,21 L5,3 Z M15,3 L19,3 L19,21 L15,21 L15,3 Z" />
@@ -62,6 +72,7 @@ export function resolveGIFEmbedContentProps(props) {
 
         props.animatedSrc = gfyItem.max1mbGif;
         props.stillSrc = gfyItem.mobilePosterUrl;
+        props.videoSrc = gfyItem.mp4Url;
         props.alt = `GIF: ${gfyItem.title}`;
         props.aspectRatio = gfyItem.height / gfyItem.width;
       })
@@ -76,6 +87,7 @@ export function resolveGIFEmbedContentProps(props) {
 
         props.animatedSrc = data.images.original.url;
         props.stillSrc = data.images.original_still.url;
+        props.videoSrc = data.images.original.mp4;
         props.alt = `GIF: ${data.title}`;
         props.aspectRatio = data.images.original.height / data.images.original.width;
       })
