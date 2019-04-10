@@ -196,3 +196,17 @@ function formatEmoji(markup) {
 
   return markup;
 }
+
+export function listContent() {
+  const contentTypesPropNames = Object.keys(CONTENT_TYPES);
+
+  return Object.keys(contentStore).map(key => {
+    const { props, type } = contentStore[key];
+
+    return {
+      id: key,
+      props,
+      type: contentTypesPropNames.find(propName => CONTENT_TYPES[propName] === type)
+    };
+  });
+}
