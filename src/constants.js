@@ -9,3 +9,5 @@ export const DEFAULTS = {
   START_CTA: 'Ask the ABC News Bot',
   RESUME_CTA: 'Return to the chat'
 };
+
+export const CUBIC_BEZIER_EASING = 'cubic-bezier(0.25, 0.5, 0.25, 1)';

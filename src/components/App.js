@@ -26,7 +26,11 @@ export default function App(props) {
       <div>
         <Card />
         <Power onClick={() => dispatch(OPEN_DIALOG_ACTION)} />
-        <Dialog render={() => <Chat />} />
+        {state.isDialogOpen && (
+          <Dialog>
+            <Chat />
+          </Dialog>
+        )}
       </div>
     </Provider>
   );

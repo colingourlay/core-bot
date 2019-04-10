@@ -1,25 +1,14 @@
 import { DialogOverlay, DialogContent } from '@reach/dialog';
 import React, { Fragment } from 'react';
-import { useTransition, animated, config } from 'react-spring';
-import useViewportSize from 'react-hook-viewport-size';
 import { useStyle } from 'styled-hooks';
+import { CUBIC_BEZIER_EASING } from '../constants';
 import { useContext, CLOSE_DIALOG_ACTION } from '../state';
+import { useViewportHeight } from '../utils/hooks';
 import Power from './Power';
 
-const DIALOG_TRANSITION_STATES = {
-  config: config.stiff,
-  from: { opacity: 0, transform: 'translate3d(0, 16px, 0)' },
-  enter: { opacity: 1, transform: 'translate3d(0, 0, 0)' },
-  leave: { opacity: 0, transform: 'translate3d(0, -16px, 0)' }
-};
-
-const AnimatedDialogOverlay = animated(DialogOverlay);
-const AnimatedDialogContent = animated(DialogContent);
-
-export default function Dialog({ render }) {
+export default function Dialog({ children }) {
   const { state, dispatch } = useContext();
-  const [, viewportHeight] = useViewportSize();
-  const transitions = useTransition(state.isDialogOpen, null, DIALOG_TRANSITION_STATES);
+  const viewportHeight = useViewportHeight();
   const overlayClassName = useStyle`
     z-index: 10000;
     position: fixed;
@@ -29,6 +18,16 @@ export default function Dialog({ render }) {
     left: 0;
     overflow: auto;
     background: rgba(0, 18, 26, 0.8);
+    animation: enterOverlay 1s ${CUBIC_BEZIER_EASING} both;
+
+    @keyframes enterOverlay {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
   `;
   const contentClassName = useStyle`
     position: fixed;
@@ -44,6 +43,20 @@ export default function Dialog({ render }) {
     height: ${viewportHeight - 80}px;
     background: rgb(237, 241, 242);
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    animation: enterContent 0.75s 0.25s ${CUBIC_BEZIER_EASING} both;
+
+    @keyframes enterContent {
+      0% {
+        opacity: 0;
+        transform: translate(0, 16px);
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transforom: none;
+      }
+    }
 
     @media (min-width: 480px) {
       right: 32px;
@@ -68,23 +81,9 @@ export default function Dialog({ render }) {
   `;
 
   return (
-    <Fragment>
-      {transitions.map(
-        ({ item, key, props }) =>
-          item && (
-            <AnimatedDialogOverlay
-              key={key}
-              className={overlayClassName}
-              style={{ opacity: props.opacity }}
-              onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}
-            >
-              <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
-              <AnimatedDialogContent className={contentClassName} style={{ transform: props.transform }}>
-                {render()}
-              </AnimatedDialogContent>
-            </AnimatedDialogOverlay>
-          )
-      )}
-    </Fragment>
+    <DialogOverlay className={overlayClassName} onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}>
+      <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
+      <DialogContent className={contentClassName}>{React.Children.only(children)}</DialogContent>
+    </DialogOverlay>
   );
 }

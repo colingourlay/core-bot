@@ -22,7 +22,6 @@ export default function Chat() {
     scroll-behavior: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 425px 0 0 0;
 
     &::-webkit-scrollbar {
       width: 0;
@@ -44,7 +43,9 @@ export default function Chat() {
 
   useLayoutEffect(() => {
     if (ref.current) {
-      // Start scrolled to the bottom when initially mounted
+      // Pad enough to allow the initial bubble to be scrolled to the bottom of the chat
+      ref.current.style.paddingTop = `${ref.current.parentElement.offsetHeight - 75}px`;
+      // Start scrolled to the bottom
       ref.current.scrollTop = ref.current.scrollHeight;
       // Stop body from scrolling (helping the Dialog out a bit here)
       disableBodyScroll(ref.current);

@@ -1,11 +1,10 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import Ellipsis from './Ellipsis';
-import { DEFAULTS } from '../constants';
+import { DEFAULTS, CUBIC_BEZIER_EASING } from '../constants';
 import { renderContent } from '../content';
 import { useContext } from '../state';
 
-const CUBIC_BEZIER_EASING = 'cubic-bezier(0.25, 0.5, 0.25, 1)';
 const TRANSPARENT_BOX_SHADOW = '0 5px 20px 0  rgba(20, 79, 102, 0)';
 
 export default function Bubble({

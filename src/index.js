@@ -1,5 +1,3 @@
-import 'web-animations-js';
-
 import capiFetch from '@abcnews/capi-fetch';
 import React from 'react';
 import { render } from 'react-dom';

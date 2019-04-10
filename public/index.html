@@ -14,6 +14,7 @@
         background: black;
       }
       main {
+        display: block;
         margin: 1rem;
         min-height: 2000px;
       }
@@ -29,10 +30,10 @@
     <footer>
       <nav class="global"></nav>
     </footer>
+    <script src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=Array.from%2Cfetch"></script>
+    <script src="web-animations.min.js"></script>
     <script src="__corebot__.js"></script>
-    <script src="index.js"></script>
-    <!-- If you add `addModernJS:true` to your build config, replace the <script> above with the ones below -->
-    <!-- <script type="module" src="index_modern.js"></script> -->
-    <!-- <script nomodule src="index.js"></script> -->
+    <script type="module" src="index_modern.js"></script>
+    <script nomodule src="index.js"></script>
   </body>
 </html>
