@@ -1,44 +1,44 @@
 {
-  "name": "core-bot",
-  "version": "1.14.0",
-  "description": "A project generated from aunty's react project template.",
-  "license": "MIT",
-  "private": true,
-  "contributors": [
-    "Colin Gourlay <Gourlay.Colin@abc.net.au>"
-  ],
-  "aunty": {
-    "type": "react",
-    "build": {
-      "addModernJS": true
-    }
-  },
-  "scripts": {
-    "sketch": "concurrently --kill-others \"cross-env AUNTY_HOST=localhost nt s\" \"sleep 5 && html-sketchapp\" || true",
-    "sketch-install": "html-sketchapp install",
-    "start": "aunty serve",
-    "test": "aunty test"
-  },
-  "devDependencies": {
-    "@abcnews/aunty": "^10.4.0",
-    "concurrently": "^4.1.0",
-    "cross-env": "^5.2.0",
-    "html-sketchapp-cli": "^0.6.2",
-    "react-test-renderer": "^16.8.5"
-  },
-  "dependencies": {
-    "@abcnews/alternating-case-to-object": "^2.0.0",
-    "@abcnews/capi-fetch": "^1.3.0",
-    "@abcnews/poll-counters-client": "^1.3.1",
-    "@reach/dialog": "^0.1.4",
-    "@reach/visually-hidden": "^0.1.2",
-    "body-scroll-lock": "^2.6.1",
-    "react": "^16.8.5",
-    "react-dom": "^16.8.5",
-    "scroll-into-view": "^1.9.5",
-    "sequenza": "^1.0.0",
-    "styled-hooks": "^1.5.4",
-    "twemoji": "^11.3.0",
-    "visibilityjs": "^2.0.2"
-  }
+	"name": "core-bot",
+	"version": "1.15.0",
+	"description": "A project generated from aunty's react project template.",
+	"license": "MIT",
+	"private": true,
+	"contributors": [
+		"Colin Gourlay <Gourlay.Colin@abc.net.au>"
+	],
+	"aunty": {
+		"type": "react",
+		"build": {
+			"addModernJS": true
+		}
+	},
+	"scripts": {
+		"sketch": "concurrently --kill-others \"cross-env AUNTY_HOST=localhost nt s\" \"sleep 5 && html-sketchapp\" || true",
+		"sketch-install": "html-sketchapp install",
+		"start": "aunty serve",
+		"test": "aunty test"
+	},
+	"devDependencies": {
+		"@abcnews/aunty": "^10.4.0",
+		"concurrently": "^4.1.0",
+		"cross-env": "^5.2.0",
+		"html-sketchapp-cli": "^0.6.2",
+		"react-test-renderer": "^16.8.5"
+	},
+	"dependencies": {
+		"@abcnews/alternating-case-to-object": "^2.0.0",
+		"@abcnews/capi-fetch": "^1.3.0",
+		"@abcnews/poll-counters-client": "^1.3.1",
+		"@reach/dialog": "^0.1.4",
+		"@reach/visually-hidden": "^0.1.2",
+		"body-scroll-lock": "^2.6.1",
+		"react": "^16.8.5",
+		"react-dom": "^16.8.5",
+		"scroll-into-view": "^1.9.5",
+		"sequenza": "^1.0.0",
+		"styled-hooks": "^1.5.4",
+		"twemoji": "^11.3.0",
+		"visibilityjs": "^2.0.2"
+	}
 }
