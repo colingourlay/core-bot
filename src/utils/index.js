@@ -6,7 +6,60 @@ import { parseContent, preloadEmoji } from '../content';
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
 const NEXT_PROPS = ['then', 'and', 'or'];
+const TO_PROPS = ['to', 'then', 'and', 'or'];
+const FROM_PROPS = ['from', 'and', 'or'];
 const URL_CMID_PATTERN = /\/([0-9]+)(\/|([\?\#].*)?$|-[0-9]+x[0-9]+-)/;
+
+function validateExperimentalGraph(graph) {
+  // Log the graph
+  console.debug(graph);
+
+  const { nodes, edges } = graph;
+
+  // Ensure every node (except the start node) has at least one prompt
+  nodes.forEach(({ id }) => {
+    if (!edges.find(edge => edge.to === id && edge.content)) {
+      throw new Error(`"${id}" must have at least one prompt`);
+    }
+  });
+
+  // Ensure every node has at least one note
+  nodes.forEach(({ id, contents }) => {
+    if (contents.length === 0) {
+      throw new Error(`"${id}" must have at least one note`);
+    }
+  });
+
+  // Ensure every node referenced by an edge exists
+  edges.forEach(({ from, to }) => {
+    [to].splice(0, 0, from).forEach(id => {
+      if (!nodes.find(node => node.id === id)) {
+        throw new Error(`"${id}" is referenced by an edge, but does not exist`);
+      }
+    });
+  });
+
+  // Ensure there are no infinite loops
+  edges.forEach(({ from, to }) => {
+    if (from === to) {
+      throw new Error(`"${id}" creates an infinite loop`);
+    }
+  });
+
+  // Warn about unreachable nodes
+  nodes.forEach(({ id }) => {
+    if (!edges.find(edge => edge.to === id)) {
+      console.warn(`"${id}" is unreachable`);
+    }
+  });
+
+  // Warn about dead-end nodes
+  nodes.forEach(({ id }) => {
+    if (!edges.find(edge => edge.from === id && edge.to == null)) {
+      console.warn(`"${id}" is unreachable`);
+    }
+  });
+}
 
 function validateGraph(graph) {
   const nodeIds = Object.keys(graph.nodes);
@@ -68,6 +121,121 @@ function validateGraph(graph) {
   });
 }
 
+function getPropsIds(propNames, stringProps) {
+  return propNames.reduce((memo, prop) => {
+    const value = stringProps[prop];
+
+    if (stringProps[prop]) {
+      return memo.concat(Array.isArray(value) ? value : [value]);
+    }
+
+    return memo;
+  }, []);
+}
+
+function createExperimentalGraph(markup) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(markup, 'text/html');
+  const sections = [];
+  let currentSection = [];
+  const nodes = [];
+  const edges = [];
+
+  Array.from(doc.body.children).forEach(el => {
+    if (el.tagName === 'A' && el.hasAttribute('name')) {
+      const [, id, propsString] = el.getAttribute('name').match(/([a-z][a-z0-9]*)([A-Z].*)?/) || [];
+
+      if (!id) {
+        return;
+      }
+
+      if (nodes.find(node => node.id === id)) {
+        const err = new Error(`"${id}" is already defined`);
+        alert(`[${name}] ${err.message}`);
+        throw err;
+      }
+
+      currentSection = {
+        id,
+        notes: [],
+        prompts: []
+      };
+      sections.push(currentSection);
+
+      const stringProps = alternatingCaseToObject(propsString || '');
+
+      currentSection.toIds = getPropsIds(TO_PROPS, stringProps);
+      currentSection.fromIds = currentSection.toIds.length ? [] : getPropsIds(FROM_PROPS, stringProps);
+
+      return;
+    }
+
+    if (!currentSection || (el.children.length === 0 && String(el.textContent).trim().length === 0)) {
+      return;
+    }
+
+    if (el.tagName.indexOf('H') === 0) {
+      const promptSourceEl = document.createElement('p');
+
+      promptSourceEl.textContent = el.textContent;
+      currentSection.prompts.push(parseContent(promptSourceEl));
+    } else {
+      currentSection.notes.push(parseContent(el.cloneNode(true)));
+    }
+  });
+
+  sections.forEach(({ id, prompts, toIds, fromIds }, index) => {
+    if (index === 0 && prompts.length) {
+      edges.push({ to: id }); // for intiial prompts
+    }
+
+    toIds.forEach(toId => {
+      if (!edges.find(edge => edge.from === id && edge.to === toId)) {
+        edges.push({ from: id, to: toId });
+      }
+    });
+    fromIds.forEach(fromId => {
+      if (!edges.find(edge => edge.from === fromId && edge.to === id)) {
+        edges.push({ from: fromId, to: id });
+      }
+    });
+  });
+
+  sections.forEach(({ id, notes, prompts }) => {
+    nodes.push({ id, contents: notes });
+    prompts.forEach(content => {
+      edges
+        .filter(edge => edge.to === id)
+        .forEach(edge => {
+          edge.content = content;
+        });
+    });
+  });
+
+  const graph = {
+    nodes,
+    edges
+  };
+
+  // Preload and cache emoji images
+  setTimeout(() => {
+    preloadEmoji();
+  }, 1000);
+
+  if (IS_DEBUG) {
+    console.groupCollapsed(`[${name}] Validate Experimental Graph`);
+    try {
+      validateExperimentalGraph(graph);
+    } catch (err) {
+      console.error(err);
+      alert(`[${name}] ${err.message}`);
+    }
+    console.groupEnd();
+  }
+
+  return graph;
+}
+
 function createGraph(markup) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(markup, 'text/html');
@@ -99,16 +267,7 @@ function createGraph(markup) {
 
       const stringProps = alternatingCaseToObject(propsString || '');
 
-      currentNode.next = NEXT_PROPS.reduce((memo, prop) => {
-        const value = stringProps[prop];
-
-        if (stringProps[prop]) {
-          return memo.concat(Array.isArray(value) ? value : [value]);
-        }
-
-        return memo;
-      }, []);
-
+      currentNode.next = getPropsIds(NEXT_PROPS, stringProps);
       graph.nodes[id] = currentNode;
 
       if (!graph.startId) {
@@ -165,6 +324,8 @@ export function articleDocumentToAppProps(doc) {
 
   titleContentSourceEl.textContent = title;
   authorContentSourceEl.textContent = author;
+
+  console.log(createExperimentalGraph(doc.text));
 
   return {
     id,
