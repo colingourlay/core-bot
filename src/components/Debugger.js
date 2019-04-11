@@ -21,17 +21,15 @@ export default function Debugger() {
     height: 100vh;
   `;
 
-  //1) setup the diagram engine
   const engine = new DiagramEngine();
+
   engine.installDefaultFactories();
 
-  //2) setup the diagram model
   const model = new DiagramModel();
   const nodes = {};
   const links = [];
 
   state.graph.nodes.forEach(node => {
-    // nodes[node.id] = new DefaultNodeModel(`${getContentText(node.contents[0]).slice(0, 20)}…`);
     nodes[node.id] = new DefaultNodeModel(
       node.contents.map(content => `${getContentText(content).slice(0, 20)}…`).join(' '),
       '#999'
@@ -39,24 +37,28 @@ export default function Debugger() {
   });
 
   state.graph.edges.forEach((edge, index) => {
-    const nodeFrom = nodes[edge.from];
-    const nodeTo = nodes[edge.to];
-    const node = (nodes[`edge_${index}`] = new DefaultNodeModel(getContentText(edge.content), '#66C'));
+    const fromNode = nodes[edge.from];
+    const toNode = nodes[edge.to];
+    const edgeNodeId = `edge_${edge.to}`;
+    let edgeNode = nodes[edgeNodeId];
 
-    nodes[`edge_${index}`] = node;
-
-    if (nodeFrom) {
-      const nodeFromOut = nodeFrom.addOutPort(' ');
-      const nodeIn = node.addInPort(' ');
-
-      links.push(nodeFromOut.link(nodeIn));
+    if (!edgeNode) {
+      edgeNode = new DefaultNodeModel(getContentText(edge.content), '#66C');
+      nodes[edgeNodeId] = edgeNode;
     }
 
-    if (nodeTo) {
-      const nodeOut = node.addOutPort(' ');
-      const nodeToIn = nodeTo.addInPort(' ');
+    if (fromNode) {
+      const fromNodeOut = fromNode.addOutPort(' ');
+      const edgeNodeIn = edgeNode.addInPort(' ');
 
-      links.push(nodeOut.link(nodeToIn));
+      links.push(fromNodeOut.link(edgeNodeIn));
+    }
+
+    if (toNode) {
+      const edgeNodeOut = edgeNode.addOutPort(' ');
+      const toNodeIn = toNode.addInPort(' ');
+
+      links.push(edgeNodeOut.link(toNodeIn));
     }
   });
 

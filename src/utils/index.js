@@ -183,25 +183,6 @@ export function articleDocumentToAppProps(doc) {
     console.groupCollapsed(`[${name}] Content`);
     console.debug(listContent());
     console.groupEnd();
-
-    console.log(`
-    Nodes:
-    ${JSON.stringify(
-      graph.nodes.map(({ id, contents }) => ({
-        id,
-        name: `${contents.map(getContentText).join(' + ')}`
-      }))
-    )}
-    
-    Edges:
-    ${JSON.stringify(
-      graph.edges.map(({ from, to, content }) => ({
-        from,
-        to,
-        label: getContentText(content)
-      }))
-    )}
-    `);
   }
 
   // Preload and cache emoji images
