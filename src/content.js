@@ -44,6 +44,7 @@ const contentStore = {};
 let nextId = 0;
 
 export function parseContent(el) {
+  const id = nextId++;
   const content = { type: CONTENT_TYPES.RICHTEXT, props: null };
   const soleLinkEl =
     el.children.length && el.firstChild.tagName === 'A' && el.firstChild === el.lastChild && el.firstChild;
@@ -74,9 +75,9 @@ export function parseContent(el) {
     content.props = { markup: formatEmoji(el.innerHTML) };
   }
 
-  contentStore[++nextId] = content;
+  contentStore[id] = content;
 
-  return nextId;
+  return id;
 }
 
 function resolveUsingCAPI(content) {
@@ -198,7 +199,7 @@ function formatEmoji(markup) {
 }
 
 export function listContent() {
-  const contentTypesPropNames = Object.keys(CONTENT_TYPES);
+  const typeNames = Object.keys(CONTENT_TYPES);
 
   return Object.keys(contentStore).map(key => {
     const { props, type } = contentStore[key];
@@ -206,7 +207,7 @@ export function listContent() {
     return {
       id: key,
       props,
-      type: contentTypesPropNames.find(propName => CONTENT_TYPES[propName] === type)
+      type: typeNames.find(typeName => CONTENT_TYPES[typeName] === type)
     };
   });
 }
