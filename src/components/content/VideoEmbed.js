@@ -3,9 +3,12 @@ import { useStyle } from 'styled-hooks';
 import Media from './Media';
 
 export default function VideoEmbed({ posterSrc, videoSrc, alt, aspectRatio, isGIF, isPlaying }) {
+  const [isLoaded, setIsLoaded] = useState(false);
   const ref = useRef();
   const className = useStyle`
     vertical-align: top;
+    opacity: ${isLoaded ? 1 : 0};
+    transition: opacity 0.5s;
   `;
 
   useEffect(() => {
@@ -30,6 +33,7 @@ export default function VideoEmbed({ posterSrc, videoSrc, alt, aspectRatio, isGI
         muted={isGIF}
         playsInline={isGIF}
         webkit-playsinline={isGIF ? '' : null}
+        onCanPlay={() => setIsLoaded(true)}
       />
     </Media>
   );
