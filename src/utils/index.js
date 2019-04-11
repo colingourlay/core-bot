@@ -5,7 +5,6 @@ import { listContent, parseContent, preloadEmoji } from '../content';
 
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
-const NEXT_PROPS = ['then', 'and', 'or'];
 const TO_PROPS = ['to', 'then', 'and', 'or'];
 const FROM_PROPS = ['from', 'and', 'or'];
 const URL_CMID_PATTERN = /\/([0-9]+)(\/|([\?\#].*)?$|-[0-9]+x[0-9]+-)/;
@@ -30,9 +29,10 @@ function validateGraph(graph) {
     }
   });
 
-  // Ensure every node referenced by an edge exists
+  // Ensure every node referenced by an edge exists (except any edge that
+  // points to the entry node, which won't have a `from` property)
   edges.forEach(({ from, to }) => {
-    [from, to].forEach(id => {
+    [to].splice(0, 0, from).forEach(id => {
       if (!nodes.find(node => node.id === id)) {
         throw new Error(`"${id}" is referenced by an edge, but does not exist`);
       }
@@ -125,6 +125,10 @@ function createGraph(markup) {
   });
 
   sections.forEach(({ id, prompts, toIds, fromIds }, index) => {
+    if (index === 0 && prompts.length > 0) {
+      edges.push({ to: id });
+    }
+
     toIds.forEach(toId => {
       if (!edges.find(edge => edge.from === id && edge.to === toId)) {
         edges.push({ from: id, to: toId });
@@ -168,7 +172,7 @@ export function articleDocumentToAppProps(doc) {
   const graph = createGraph(doc.text);
 
   if (IS_DEBUG) {
-    console.groupCollapsed(`[${name}] Validate Graph`);
+    console.groupCollapsed(`[${name}] Graph`);
     try {
       validateGraph(graph);
     } catch (err) {
