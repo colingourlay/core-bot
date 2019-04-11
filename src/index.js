@@ -50,14 +50,17 @@ if (footerEl && window.IntersectionObserver) {
 }
 
 if (module.hot) {
-  module.hot.accept('./components/App', () => {
+  function initHot() {
     try {
       init();
     } catch (err) {
       import('./components/ErrorBox').then(exports => {
         const ErrorBox = exports.default;
-        render(<ErrorBox error={err} />, root);
+        render(<ErrorBox error={err} />, rootEl);
       });
     }
-  });
+  }
+
+  module.hot.accept('./components/App', initHot);
+  module.hot.accept('./components/Debugger', initHot);
 }

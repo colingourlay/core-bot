@@ -1,7 +1,7 @@
 import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
 import { name } from '../../package';
 import { IS_DEBUG } from '../constants';
-import { listContent, parseContent, preloadEmoji } from '../content';
+import { getContentText, listContent, parseContent, preloadEmoji } from '../content';
 
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
@@ -183,6 +183,25 @@ export function articleDocumentToAppProps(doc) {
     console.groupCollapsed(`[${name}] Content`);
     console.debug(listContent());
     console.groupEnd();
+
+    console.log(`
+    Nodes:
+    ${JSON.stringify(
+      graph.nodes.map(({ id, contents }) => ({
+        id,
+        name: `${contents.map(getContentText).join(' + ')}`
+      }))
+    )}
+    
+    Edges:
+    ${JSON.stringify(
+      graph.edges.map(({ from, to, content }) => ({
+        from,
+        to,
+        label: getContentText(content)
+      }))
+    )}
+    `);
   }
 
   // Preload and cache emoji images

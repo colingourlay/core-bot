@@ -28,12 +28,14 @@ export const ACTION_TYPES = {
   UPDATE_PROMPTS: 6,
   CHOOSE_PROMPT: 7,
   EXIT_LINK: 8,
-  WINDOW_UNLOAD: 9
+  WINDOW_UNLOAD: 9,
+  OPEN_DEBUG_DIALOG: 10
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
 export const CLOSE_DIALOG_ACTION = { type: ACTION_TYPES.CLOSE_DIALOG };
 export const WINDOW_UNLOAD_ACTION = { type: ACTION_TYPES.WINDOW_UNLOAD };
+export const OPEN_DEBUG_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DEBUG_DIALOG };
 
 function getHostMessages(nodeId, graph) {
   return graph.nodes.find(({ id }) => id === nodeId).contents.map(contentId => ({ contentId }));
@@ -88,7 +90,7 @@ function reducer(state, action) {
     case ACTION_TYPES.CLOSE_DIALOG:
       Visibility.stop(session.durationUpdateInterval);
 
-      return { ...state, isDialogOpen: false };
+      return { ...state, isDialogOpen: false, isDebugDialogOpen: false };
     case ACTION_TYPES.HOST_COMPOSING:
       const history = state.history;
       const mostRecent = history[history.length - 1];
@@ -134,6 +136,8 @@ function reducer(state, action) {
       }
 
       return state;
+    case ACTION_TYPES.OPEN_DEBUG_DIALOG:
+      return { ...state, isDebugDialogOpen: true };
     default:
       throw new Error('Unrecognised action');
   }
@@ -144,6 +148,7 @@ function getInitialState(props) {
     ...props,
     history: [],
     isDialogOpen: false,
+    isDebugDialogOpen: false,
     prompts: []
   };
 }

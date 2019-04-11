@@ -127,6 +127,19 @@ function resolveUsingCAPI(content) {
   });
 }
 
+export function getContentText(id) {
+  const { type, props } = contentStore[id];
+
+  switch (type) {
+    case CONTENT_TYPES.RICHTEXT:
+      const el = document.createElement('div');
+      el.innerHTML = props.markup;
+      return el.textContent;
+    default:
+      return `[${getContentTypeName(type)}]`;
+  }
+}
+
 export function renderContent(id) {
   const content = contentStore[id];
 
@@ -198,6 +211,12 @@ function formatEmoji(markup) {
   return markup;
 }
 
+function getContentTypeName(type) {
+  const typeNames = Object.keys(CONTENT_TYPES);
+
+  return typeNames.find(typeName => CONTENT_TYPES[typeName] === type);
+}
+
 export function listContent() {
   const typeNames = Object.keys(CONTENT_TYPES);
 
@@ -207,7 +226,7 @@ export function listContent() {
     return {
       id: key,
       props,
-      type: typeNames.find(typeName => CONTENT_TYPES[typeName] === type)
+      type: getContentTypeName(type)
     };
   });
 }

@@ -1,13 +1,15 @@
 import { DialogOverlay, DialogContent } from '@reach/dialog';
-import React, { Fragment } from 'react';
+import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
+import React, { useLayoutEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import { CUBIC_BEZIER_EASING } from '../constants';
 import { useContext, CLOSE_DIALOG_ACTION } from '../state';
 import { useViewportHeight } from '../utils/hooks';
 import Power from './Power';
 
-export default function Dialog({ children }) {
+export default function Dialog({ children, isDebug }) {
   const { state, dispatch } = useContext();
+  const ref = useRef();
   const viewportHeight = useViewportHeight();
   const overlayClassName = useStyle`
     z-index: 10000;
@@ -35,7 +37,7 @@ export default function Dialog({ children }) {
     bottom: 68px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
     box-sizing: border-box;
     overflow: hidden;
     margin: 0;
@@ -80,10 +82,40 @@ export default function Dialog({ children }) {
     }
   `;
 
+  const debugContentClassName = useStyle`
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: ${viewportHeight}px !important;
+    max-width: none !important;
+    max-height: none !important;
+    background: #000;
+
+    &::after {
+      content: none;
+    }
+  `;
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      // Stop body from scrolling
+      disableBodyScroll(ref.current);
+    }
+
+    return () => {
+      // Enable body scrolling ro resume on un-mount;
+      clearAllBodyScrollLocks();
+    };
+  });
+
   return (
-    <DialogOverlay className={overlayClassName} onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}>
-      <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
-      <DialogContent className={contentClassName}>{React.Children.only(children)}</DialogContent>
-    </DialogOverlay>
+    <div ref={ref}>
+      <DialogOverlay className={overlayClassName} onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}>
+        <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
+        <DialogContent className={`${contentClassName}${isDebug ? ` ${debugContentClassName}` : ''}`}>
+          {React.Children.only(children)}
+        </DialogContent>
+      </DialogOverlay>
+    </div>
   );
 }
