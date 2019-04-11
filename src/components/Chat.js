@@ -67,7 +67,7 @@ export default function Chat() {
     const initialScrollTop = ref.current.scrollTop;
 
     requestAnimationFrame(() => {
-      if (initialScrollTop !== ref.current.scrollTop) {
+      if (!ref.current || initialScrollTop !== ref.current.scrollTop) {
         return;
       }
 
