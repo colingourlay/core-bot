@@ -35,24 +35,22 @@ export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
 export const CLOSE_DIALOG_ACTION = { type: ACTION_TYPES.CLOSE_DIALOG };
 export const WINDOW_UNLOAD_ACTION = { type: ACTION_TYPES.WINDOW_UNLOAD };
 
-function getNextHostNotes(node) {
-  return node.notes.map(contentId => ({ contentId }));
+function getHostMessages(nodeId, graph) {
+  return graph.nodes.find(({ id }) => id === nodeId).contents.map(contentId => ({ contentId }));
 }
 
-function getNextPrompts(node, graph) {
-  return node.next.reduce(
-    (memo, id) => memo.concat(graph.nodes[id].prompts.map(contentId => ({ contentId, targetNodeId: id }))),
-    []
-  );
+function getGuestPrompts(nodeId, graph) {
+  return graph.edges
+    .filter(({ from }) => from === nodeId)
+    .map(({ content, to }) => ({ contentId: content, targetNodeId: to }));
 }
 
 function scheduleHostActivity(nodeId, graph, dispatch) {
-  const targetNode = graph.nodes[nodeId];
-  const nextHostNotes = getNextHostNotes(targetNode, graph);
-  const nextPrompts = getNextPrompts(targetNode, graph);
+  const hostMessages = getHostMessages(nodeId, graph);
+  const guestPrompts = getGuestPrompts(nodeId, graph);
   const sequenza = new Sequenza();
 
-  nextHostNotes.forEach((note, index) => {
+  hostMessages.forEach((note, index) => {
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
       delay: index ? 750 : 1250
@@ -63,7 +61,7 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
     });
   });
   sequenza.queue({
-    callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: nextPrompts }),
+    callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: guestPrompts }),
     delay: 1750
   });
   sequenza.start();
@@ -104,23 +102,27 @@ function reducer(state, action) {
     case ACTION_TYPES.HOST_MESSAGE:
       return { ...state, isHostComposing: false, history: state.history.concat([action.data]) };
     case ACTION_TYPES.HOST_START:
-      const startNodePrompt = state.graph.nodes[state.graph.startId].prompts[0];
-      const firstGuestPrompt = { contentId: startNodePrompt || state.titleContentId, isGuest: true };
+      const entryNode = state.graph.nodes[0];
+      const entryEdge = state.graph.edges.find(({ to }) => to === entryNode.id);
 
-      scheduleHostActivity(state.graph.startId, state.graph, action.data.dispatch);
+      scheduleHostActivity(entryNode.id, state.graph, action.data.dispatch);
 
-      return { ...state, history: state.history.concat([firstGuestPrompt]) };
+      return {
+        ...state,
+        history: state.history.concat([
+          { contentId: entryEdge ? entryEdge.content : state.titleContentId, isGuest: true }
+        ])
+      };
     case ACTION_TYPES.UPDATE_PROMPTS:
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
       const { contentId, targetNodeId, markup, box, parentBox, dispatch } = action.data;
-      const nextGuestPrompt = { contentId, isGuest: true, box, parentBox };
 
       scheduleHostActivity(targetNodeId, state.graph, dispatch);
       session.prompts++;
       track(state.id, 'prompt-target', targetNodeId);
 
-      return { ...state, prompts: [], history: state.history.concat([nextGuestPrompt]) };
+      return { ...state, prompts: [], history: state.history.concat([{ contentId, isGuest: true, box, parentBox }]) };
     case ACTION_TYPES.EXIT_LINK:
       track(state.id, 'exit-link', action.data);
 
@@ -138,9 +140,6 @@ function reducer(state, action) {
 }
 
 function getInitialState(props) {
-  const { graph } = props;
-  const startNode = graph.nodes[graph.startId];
-
   return {
     ...props,
     history: [],
