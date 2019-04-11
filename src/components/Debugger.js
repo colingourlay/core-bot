@@ -31,7 +31,10 @@ export default function Debugger() {
   const links = [];
 
   state.graph.nodes.forEach(node => {
-    nodes[node.id] = new DefaultNodeModel(node.id);
+    // nodes[node.id] = new DefaultNodeModel(`${getContentText(node.contents[0]).slice(0, 20)}…`);
+    nodes[node.id] = new DefaultNodeModel(
+      node.contents.map(content => `${getContentText(content).slice(0, 20)}…`).join(' ')
+    );
   });
 
   state.graph.edges.forEach(edge => {
@@ -43,9 +46,7 @@ export default function Debugger() {
     }
 
     const nodeTo = nodes[edge.to];
-    const portOut = nodeFrom.addOutPort(
-      Object.keys(nodeFrom.ports).length > 1 ? ' ' : `${getContentText(graphNodeFrom.contents[0]).slice(0, 15)}...`
-    );
+    const portOut = nodeFrom.addOutPort(' ');
     const portTo = nodeTo.addInPort(' ');
     const link = portOut.link(portTo);
 

@@ -1,8 +1,8 @@
 import { graphlib, layout } from 'dagre';
 
 const SIZE = {
-  width: 240,
-  height: 240
+  width: 400,
+  height: 200
 };
 
 export function distributeElements(model) {
