@@ -33,25 +33,31 @@ export default function Debugger() {
   state.graph.nodes.forEach(node => {
     // nodes[node.id] = new DefaultNodeModel(`${getContentText(node.contents[0]).slice(0, 20)}…`);
     nodes[node.id] = new DefaultNodeModel(
-      node.contents.map(content => `${getContentText(content).slice(0, 20)}…`).join(' ')
+      node.contents.map(content => `${getContentText(content).slice(0, 20)}…`).join(' '),
+      '#999'
     );
   });
 
-  state.graph.edges.forEach(edge => {
+  state.graph.edges.forEach((edge, index) => {
     const nodeFrom = nodes[edge.from];
-    const graphNodeFrom = state.graph.nodes.find(node => node.id === edge.from);
+    const nodeTo = nodes[edge.to];
+    const node = (nodes[`edge_${index}`] = new DefaultNodeModel(getContentText(edge.content), '#66C'));
 
-    if (!nodeFrom) {
-      return;
+    nodes[`edge_${index}`] = node;
+
+    if (nodeFrom) {
+      const nodeFromOut = nodeFrom.addOutPort(' ');
+      const nodeIn = node.addInPort(' ');
+
+      links.push(nodeFromOut.link(nodeIn));
     }
 
-    const nodeTo = nodes[edge.to];
-    const portOut = nodeFrom.addOutPort(' ');
-    const portTo = nodeTo.addInPort(' ');
-    const link = portOut.link(portTo);
+    if (nodeTo) {
+      const nodeOut = node.addOutPort(' ');
+      const nodeToIn = nodeTo.addInPort(' ');
 
-    link.addLabel(getContentText(edge.content));
-    links.push(link);
+      links.push(nodeOut.link(nodeToIn));
+    }
   });
 
   Object.keys(nodes).forEach(key => model.addNode(nodes[key]));
