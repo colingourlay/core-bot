@@ -1,4 +1,5 @@
 import capiFetch from '@abcnews/capi-fetch';
+import { name as gemoji } from 'gemoji';
 import React from 'react';
 import twemoji from 'twemoji';
 import GIFEmbed, { GIF_URL_PATTERNS, resolveGIFEmbedContentProps } from './components/content/GIFEmbed';
@@ -20,6 +21,7 @@ const TWEMOJI_PARSING_OPTIONS = {
   folder: 'svg',
   ext: '.svg'
 };
+const GEMOJI_PATTERN = /:[\w_]+:/g;
 
 const CONTENT_TYPES = {
   CAPI_UNRESOLVED: 1,
@@ -72,7 +74,7 @@ export function parseContent(el) {
     }
   } else {
     smartquotes(el);
-    content.props = { originalMarkup: el.innerHTML, markup: formatEmoji(el.innerHTML) };
+    content.props = { originalMarkup: el.innerHTML, markup: formatEmoji(replaceGemoji(el.innerHTML)) };
   }
 
   contentStore[id] = content;
@@ -162,6 +164,16 @@ export function preloadEmoji() {
 
 function replaceEmoji(markup) {
   return twemoji.parse(markup, TWEMOJI_PARSING_OPTIONS);
+}
+
+function gemojiReplacer(match) {
+  const result = gemoji[match.slice(1, -1)];
+
+  return result ? result.emoji : match;
+}
+
+function replaceGemoji(markup) {
+  return markup.replace(GEMOJI_PATTERN, gemojiReplacer);
 }
 
 function formatEmoji(markup) {

@@ -35,11 +35,12 @@
 		"@reach/visually-hidden": "^0.1.2",
 		"body-scroll-lock": "^2.6.1",
 		"flowchart.js": "^1.11.3",
+		"gemoji": "^4.2.1",
 		"react": "^16.8.5",
 		"react-dom": "^16.8.5",
 		"scroll-into-view": "^1.9.5",
 		"sequenza": "^1.0.0",
-		"styled-hooks": "^1.5.4",
+		"styled-hooks": "^1.6.0",
 		"twemoji": "^11.3.0",
 		"visibilityjs": "^2.0.2"
 	}
