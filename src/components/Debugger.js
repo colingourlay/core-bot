@@ -69,22 +69,22 @@ export default function Debugger() {
   }
 
   state.graph.edges.forEach((edge, index) => {
-    const { from, to, content } = edge;
-    const edgeNodeId = `_${to}`;
+    const content = edge.content || state.title;
+    const { from, to } = edge;
+    const edgeNodeId = `_${to}_${content}`;
 
     if (!nodes[edgeNodeId]) {
       nodes[edgeNodeId] = `${edge.from ? 'operation' : 'start'}: ${contentToLabelText(content)}|guest`;
-      // nodes[edgeNodeId] = `${edge.from ? 'operation' : 'start'}: #${edge.to}|guest`;
       edges.push([edgeNodeId, to]);
     }
 
     if (from) {
       const existingFromNodes = edges.filter(edge => edge[0].split('(')[0] === from);
-      const pathIndex = existingFromNodes.length % 4;
+      const fromPathIndex = existingFromNodes.length % 4;
 
       edges.push([
-        `${from}(path${pathIndex + 1}, ${PARALLEL_DIRECTIONS[pathIndex]})`,
-        `${edgeNodeId}(${PARALLEL_DIRECTIONS[(pathIndex + 2) % 4]})`
+        `${from}(path${fromPathIndex + 1}, ${PARALLEL_DIRECTIONS[fromPathIndex]})`,
+        `${edgeNodeId}(${PARALLEL_DIRECTIONS[(fromPathIndex + 2) % 4]})`
       ]);
     }
   });
@@ -92,15 +92,16 @@ export default function Debugger() {
   const input = `${Object.keys(nodes).reduce((memo, key) => `${memo}\n${key}=>${nodes[key]}`, '')}
 ${edges.reduce((memo, edge) => `${memo}\n${edge.join('->')}`, '')}`;
 
-  const diagram = flowchart.parse(input);
+  console.groupCollapsed(`[${name}] Diagram`);
+  console.debug(nodes);
+  console.debug(edges);
+  console.debug(input);
+  console.groupEnd();
 
   useEffect(() => {
+    const diagram = flowchart.parse(input);
+
     diagram.drawSVG(ref.current, DIAGRAM_CONFIG);
-    console.groupCollapsed(`[${name}] Diagram`);
-    console.debug(nodes);
-    console.debug(edges);
-    console.debug(input);
-    console.groupEnd();
   }, []);
 
   return <div ref={ref} className={className} />;
