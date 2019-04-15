@@ -1,6 +1,5 @@
 import { DialogOverlay, DialogContent } from '@reach/dialog';
-import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
-import React, { useLayoutEffect, useRef } from 'react';
+import React from 'react';
 import { useStyle } from 'styled-hooks';
 import { CUBIC_BEZIER_EASING } from '../constants';
 import { useContext, CLOSE_DIALOG_ACTION } from '../state';
@@ -9,7 +8,6 @@ import Power from './Power';
 
 export default function Dialog({ children, isDebug }) {
   const { state, dispatch } = useContext();
-  const ref = useRef();
   const viewportHeight = useViewportHeight();
   const overlayClassName = useStyle`
     z-index: 10000;
@@ -97,26 +95,12 @@ export default function Dialog({ children, isDebug }) {
     }
   `;
 
-  useLayoutEffect(() => {
-    if (ref.current) {
-      // Stop body from scrolling
-      disableBodyScroll(ref.current);
-    }
-
-    return () => {
-      // Enable body scrolling ro resume on un-mount;
-      clearAllBodyScrollLocks();
-    };
-  });
-
   return (
-    <div ref={ref}>
-      <DialogOverlay className={overlayClassName} onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}>
-        <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
-        <DialogContent className={`${contentClassName}${isDebug ? ` ${debugContentClassName}` : ''}`}>
-          {React.Children.only(children)}
-        </DialogContent>
-      </DialogOverlay>
-    </div>
+    <DialogOverlay className={overlayClassName} onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}>
+      <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
+      <DialogContent className={`${contentClassName}${isDebug ? ` ${debugContentClassName}` : ''}`}>
+        {React.Children.only(children)}
+      </DialogContent>
+    </DialogOverlay>
   );
 }
