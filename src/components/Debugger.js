@@ -19,7 +19,12 @@ const DIAGRAM_CONFIG = {
     guest: {
       fill: '#144f66',
       'font-color': '#fff',
-      'line-length': 20
+      'line-length': 50
+    }
+  },
+  symbols: {
+    end: {
+      'element-color': 'red'
     }
   }
 };
