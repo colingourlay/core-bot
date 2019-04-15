@@ -89,7 +89,7 @@ export default function Dialog({ children, isDebug }) {
     height: ${viewportHeight}px !important;
     max-width: none !important;
     max-height: none !important;
-    background: #000 !important;
+    background: #ffc200 !important;
     animation: none !important;
 
     &::after {

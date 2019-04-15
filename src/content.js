@@ -72,7 +72,7 @@ export function parseContent(el) {
     }
   } else {
     smartquotes(el);
-    content.props = { markup: formatEmoji(el.innerHTML) };
+    content.props = { originalMarkup: el.innerHTML, markup: formatEmoji(el.innerHTML) };
   }
 
   contentStore[id] = content;
@@ -133,8 +133,8 @@ export function getContentText(id) {
   switch (type) {
     case CONTENT_TYPES.RICHTEXT:
       const el = document.createElement('div');
-      el.innerHTML = props.markup;
-      return el.textContent;
+      el.innerHTML = props.originalMarkup;
+      return el.textContent.trim();
     default:
       return `[${getContentTypeName(type)}]`;
   }

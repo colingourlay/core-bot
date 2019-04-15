@@ -1,80 +1,107 @@
-import { distributeElements } from '../utils/dagre';
-import React from 'react';
-import {
-  DiagramEngine,
-  DiagramModel,
-  DefaultNodeModel,
-  LinkModel,
-  DefaultPortModel,
-  DiagramWidget,
-  DefaultLinkModel
-} from 'storm-react-diagrams';
-import 'storm-react-diagrams/dist/style.min.css';
+import { parse } from 'flowchart.js';
+import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
+import { name } from '../../package';
 import { useContext } from '../state';
 import { getContentText } from '../content';
 
+const DIAGRAM_CONFIG = {
+  'arrow-end': 'block-wide-long',
+  'element-color': 'transparent',
+  'font-family': 'ABCSans',
+  'font-size': 11,
+  'line-length': 100,
+  'line-width': 2,
+  flowstate: {
+    host: {
+      // 'element-color': '#000'
+    },
+    guest: {
+      fill: '#144f66',
+      'font-color': '#fff',
+      'line-length': 20
+    }
+  }
+};
+const PARALLEL_DIRECTIONS = ['bottom', 'right', 'top', 'left'];
+const RESERVED_TEXT_PATTERN = /=>|->|:>|@>|\|/g;
+const MESSAGE_MAX_LENGTH = 30;
+
+function contentToLabelText(content) {
+  return getContentText(content)
+    .replace(RESERVED_TEXT_PATTERN, '')
+    .trim();
+}
+
 export default function Debugger() {
   const { state } = useContext();
+  const ref = useRef();
   const className = useStyle`
-    display: flex;
     height: 100vh;
+    overflow: auto;
+
+    & > svg {
+      margin: 5vmin;
+      flex: 0 0 auto;
+    }
   `;
 
-  const engine = new DiagramEngine();
-
-  engine.installDefaultFactories();
-
-  const model = new DiagramModel();
   const nodes = {};
-  const links = [];
 
-  state.graph.nodes.forEach(node => {
-    nodes[node.id] = new DefaultNodeModel(
-      node.contents.map(content => `${getContentText(content).slice(0, 20)}…`).join(' '),
-      '#999'
-    );
+  state.graph.nodes.forEach((node, index) => {
+    const isEnd = !state.graph.edges.find(edge => edge.from === node.id);
+
+    nodes[node.id] = `${isEnd ? 'end' : 'parallel'}: ${node.contents
+      .map(content => {
+        const text = contentToLabelText(content);
+
+        return text.slice(0, MESSAGE_MAX_LENGTH) + (text.length > MESSAGE_MAX_LENGTH ? '…' : '');
+      })
+      .join('\n')}|host`;
+    // nodes[node.id] = `${isEnd ? 'end' : 'parallel'}: #${node.id}|host`;
   });
+
+  const edges = [];
+
+  if (!state.graph.edges.find(edge => !edge.from)) {
+    nodes._ = `start: ${state.title}|guest`;
+    edges.push([`_`, `${state.graph.nodes[0].id}`]);
+  }
 
   state.graph.edges.forEach((edge, index) => {
-    const fromNode = nodes[edge.from];
-    const toNode = nodes[edge.to];
-    const edgeNodeId = `edge_${edge.to}`;
-    let edgeNode = nodes[edgeNodeId];
+    const { from, to, content } = edge;
+    const edgeNodeId = `_${to}`;
 
-    if (!edgeNode) {
-      edgeNode = new DefaultNodeModel(getContentText(edge.content), '#66C');
-      nodes[edgeNodeId] = edgeNode;
+    if (!nodes[edgeNodeId]) {
+      nodes[edgeNodeId] = `${edge.from ? 'operation' : 'start'}: ${contentToLabelText(content)}|guest`;
+      // nodes[edgeNodeId] = `${edge.from ? 'operation' : 'start'}: #${edge.to}|guest`;
+      edges.push([edgeNodeId, to]);
     }
 
-    if (fromNode) {
-      const fromNodeOut = fromNode.addOutPort(' ');
-      const edgeNodeIn = edgeNode.addInPort(' ');
+    if (from) {
+      const existingFromNodes = edges.filter(edge => edge[0].split('(')[0] === from);
+      const pathIndex = existingFromNodes.length % 4;
 
-      links.push(fromNodeOut.link(edgeNodeIn));
-    }
-
-    if (toNode) {
-      const edgeNodeOut = edgeNode.addOutPort(' ');
-      const toNodeIn = toNode.addInPort(' ');
-
-      links.push(edgeNodeOut.link(toNodeIn));
+      edges.push([
+        `${from}(path${pathIndex + 1}, ${PARALLEL_DIRECTIONS[pathIndex]})`,
+        `${edgeNodeId}(${PARALLEL_DIRECTIONS[(pathIndex + 2) % 4]})`
+      ]);
     }
   });
 
-  Object.keys(nodes).forEach(key => model.addNode(nodes[key]));
-  links.forEach(link => model.addLink(link));
+  const input = `${Object.keys(nodes).reduce((memo, key) => `${memo}\n${key}=>${nodes[key]}`, '')}
+${edges.reduce((memo, edge) => `${memo}\n${edge.join('->')}`, '')}`;
 
-  const serialized = model.serializeDiagram();
-  const distributedSerializedDiagram = distributeElements(serialized);
-  const deSerializedModel = new DiagramModel();
+  const diagram = flowchart.parse(input);
 
-  deSerializedModel.deSerializeDiagram(distributedSerializedDiagram, engine);
-  engine.setDiagramModel(deSerializedModel);
+  useEffect(() => {
+    diagram.drawSVG(ref.current, DIAGRAM_CONFIG);
+    console.groupCollapsed(`[${name}] Diagram`);
+    console.debug(nodes);
+    console.debug(edges);
+    console.debug(input);
+    console.groupEnd();
+  }, []);
 
-  return (
-    <div className={className}>
-      <DiagramWidget diagramEngine={engine} />
-    </div>
-  );
+  return <div ref={ref} className={className} />;
 }
