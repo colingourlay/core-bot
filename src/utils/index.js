@@ -5,8 +5,7 @@ import { getContentText, listContent, parseContent, preloadEmoji } from '../cont
 
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
-const TO_PROPS = ['to', 'then', 'and', 'or'];
-const FROM_PROPS = ['from', 'and', 'or'];
+const THEN_PROPS = ['then', 'and', 'or'];
 const URL_CMID_PATTERN = /\/([0-9]+)(\/|([\?\#].*)?$|-[0-9]+x[0-9]+-)/;
 
 function validateGraph(graph) {
@@ -98,16 +97,11 @@ function createGraph(markup) {
       currentSection = {
         id,
         notes: [],
-        prompts: []
+        prompts: [],
+        thenIds: getPropsIds(THEN_PROPS, alternatingCaseToObject(propsString || ''))
       };
-      sections.push(currentSection);
 
-      const stringProps = alternatingCaseToObject(propsString || '');
-
-      currentSection.toIds = getPropsIds(TO_PROPS, stringProps);
-      currentSection.fromIds = currentSection.toIds.length ? [] : getPropsIds(FROM_PROPS, stringProps);
-
-      return;
+      return sections.push(currentSection);
     }
 
     if (!currentSection || (el.children.length === 0 && String(el.textContent).trim().length === 0)) {
@@ -124,31 +118,26 @@ function createGraph(markup) {
     }
   });
 
-  sections.forEach(({ id, prompts, toIds, fromIds }, index) => {
+  sections.forEach(({ id, notes, prompts, thenIds }, index) => {
+    nodes.push({ id, contents: notes });
+
     if (index === 0 && prompts.length > 0) {
-      edges.push({ to: id });
+      edges.push({ to: id, content: prompts[0] });
     }
 
-    toIds.forEach(toId => {
-      if (!edges.find(edge => edge.from === id && edge.to === toId)) {
-        edges.push({ from: id, to: toId });
-      }
-    });
-    fromIds.forEach(fromId => {
-      if (!edges.find(edge => edge.from === fromId && edge.to === id)) {
-        edges.push({ from: fromId, to: id });
-      }
-    });
-  });
+    thenIds.forEach(thenId => {
+      const thenSection = sections.find(section => section.id === thenId);
 
-  sections.forEach(({ id, notes, prompts }) => {
-    nodes.push({ id, contents: notes });
-    prompts.forEach(content => {
-      edges
-        .filter(edge => edge.to === id)
-        .forEach(edge => {
-          edge.content = content;
-        });
+      if (!thenSection) {
+        // This will be caught by the validator
+        return edges.push({ from: id, to: thenId, content: null });
+      }
+
+      thenSection.prompts.forEach(prompt => {
+        if (!edges.find(edge => edge.from === id && edge.to === thenId && edge.content === prompt)) {
+          edges.push({ from: id, to: thenId, content: prompt });
+        }
+      });
     });
   });
 
