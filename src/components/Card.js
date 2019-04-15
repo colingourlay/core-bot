@@ -82,7 +82,7 @@ export default function Card({ text, icon, action }) {
         width="30"
         height="29"
         aria-hidden
-        onClick={() => IS_DEBUG && dispatch(OPEN_DEBUG_DIALOG_ACTION)}
+        onClick={IS_DEBUG ? () => dispatch(OPEN_DEBUG_DIALOG_ACTION) : null}
       >
         <path d="M30 18v11l-9-9H5a5 5 0 0 1-5-5V2a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v16z" />
       </svg>
