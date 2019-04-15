@@ -1,6 +1,5 @@
 import VisuallyHidden from '@reach/visually-hidden';
-import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
-import React, { useLayoutEffect, useRef } from 'react';
+import React from 'react';
 import { useStyle } from 'styled-hooks';
 import { DEFAULTS, IS_DEBUG } from '../constants';
 import { useContext, OPEN_DIALOG_ACTION, OPEN_DEBUG_DIALOG_ACTION } from '../state';
@@ -9,7 +8,6 @@ import Power from './Power';
 
 export default function Card({ text, icon, action }) {
   const { state, dispatch } = useContext();
-  const ref = useRef();
   const className = useStyle`
     position: relative;
     box-sizing: border-box;
@@ -69,20 +67,8 @@ export default function Card({ text, icon, action }) {
     left: 0;
   `;
 
-  useLayoutEffect(() => {
-    if (ref.current) {
-      // Stop body from scrolling
-      disableBodyScroll(ref.current);
-    }
-
-    return () => {
-      // Enable body scrolling ro resume on un-mount;
-      clearAllBodyScrollLocks();
-    };
-  });
-
   return (
-    <div ref={ref} className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Card'}>
+    <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Card'}>
       <div className={innerClassName}>
         <h3>{widont(state.title)}</h3>
         <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>

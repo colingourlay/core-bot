@@ -1,3 +1,4 @@
+import { disableBodyScroll, clearAllBodyScrollLocks } from 'body-scroll-lock';
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import scrollIntoView from 'scroll-into-view';
 import { useStyle } from 'styled-hooks';
@@ -46,11 +47,18 @@ export default function Chat() {
       ref.current.style.paddingTop = `${ref.current.parentElement.offsetHeight - 75}px`;
       // Start scrolled to the bottom
       ref.current.scrollTop = ref.current.scrollHeight;
+      // Stop body from scrolling
+      disableBodyScroll(ref.current);
     }
 
     if (!state.history.length) {
       dispatch({ type: ACTION_TYPES.HOST_START, data: { dispatch } });
     }
+
+    return () => {
+      // Enable body scrolling ro resume on un-mount;
+      clearAllBodyScrollLocks();
+    };
   }, []);
 
   useEffect(() => {
