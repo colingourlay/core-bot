@@ -107,6 +107,7 @@ function resolveUsingCAPI(content) {
         content.props = {
           src: imageRendition.url,
           alt: doc.alt || doc.title,
+          attribution: doc.bylinePlain,
           aspectRatio: imageRendition.height / imageRendition.width
         };
         content.type = CONTENT_TYPES.IMAGE_EMBED;
@@ -118,6 +119,7 @@ function resolveUsingCAPI(content) {
           videoSrc: videoRendition.url,
           posterSrc: doc.thumbnailLink ? doc.thumbnailLink.media[0].url : null,
           alt: doc.alt || doc.title,
+          attribution: doc.bylinePlain,
           aspectRatio: videoRendition.height / videoRendition.width
         };
         content.type = CONTENT_TYPES.VIDEO_EMBED;

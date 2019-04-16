@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useStyle } from 'styled-hooks';
 import Media from './Media';
 
-export default function VideoEmbed({ posterSrc, videoSrc, alt, aspectRatio, isGIF, isPlaying }) {
+export default function VideoEmbed({ posterSrc, videoSrc, alt, attribution, aspectRatio, isGIF, isPlaying }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const ref = useRef();
   const className = useStyle`
@@ -10,6 +10,7 @@ export default function VideoEmbed({ posterSrc, videoSrc, alt, aspectRatio, isGI
     opacity: ${isLoaded ? 1 : 0};
     transition: opacity 0.5s;
   `;
+  const title = `${alt || ''}${alt && attribution ? ' | ' : ''}${attribution || ''}`;
 
   useEffect(() => {
     if (!isGIF) {
@@ -27,7 +28,7 @@ export default function VideoEmbed({ posterSrc, videoSrc, alt, aspectRatio, isGI
         src={videoSrc}
         poster={posterSrc}
         alt={alt || null}
-        title={alt || null}
+        title={title || null}
         controls={!isGIF}
         loop={isGIF}
         muted={isGIF}

@@ -3,7 +3,7 @@ import { useStyle } from 'styled-hooks';
 import ImageEmbed from './ImageEmbed';
 import VideoEmbed from './VideoEmbed';
 
-export default function GIFEmbed({ animatedSrc, stillSrc, videoSrc, alt, aspectRatio, color }) {
+export default function GIFEmbed({ animatedSrc, stillSrc, videoSrc, alt, attribution, aspectRatio, color }) {
   const [isPlaying, setIsPlaying] = useState(true);
   const className = useStyle`
     display: block;
@@ -34,12 +34,18 @@ export default function GIFEmbed({ animatedSrc, stillSrc, videoSrc, alt, aspectR
           posterSrc={stillSrc}
           videoSrc={videoSrc}
           alt={alt}
+          attribution={attribution}
           aspectRatio={aspectRatio}
           isGIF
           isPlaying={isPlaying}
         />
       ) : (
-        <ImageEmbed src={isPlaying ? animatedSrc : stillSrc} alt={alt} aspectRatio={aspectRatio} />
+        <ImageEmbed
+          src={isPlaying ? animatedSrc : stillSrc}
+          alt={alt}
+          attribution={attribution}
+          aspectRatio={aspectRatio}
+        />
       )}
       <svg role="presentation" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
         {isPlaying ? (
@@ -74,6 +80,7 @@ export function resolveGIFEmbedContentProps(props) {
         props.stillSrc = gfyItem.mobilePosterUrl;
         props.videoSrc = gfyItem.mp4Url;
         props.alt = `GIF: ${gfyItem.title}`;
+        props.attribution = 'Gfycat';
         props.aspectRatio = gfyItem.height / gfyItem.width;
       })
       .catch(err => console.error(err));
@@ -89,6 +96,7 @@ export function resolveGIFEmbedContentProps(props) {
         props.stillSrc = data.images.original_still.url;
         props.videoSrc = data.images.original.mp4;
         props.alt = `GIF: ${data.title}`;
+        props.attribution = 'Giphy';
         props.aspectRatio = data.images.original.height / data.images.original.width;
       })
       .catch(err => console.error(err));
