@@ -245,6 +245,11 @@ export function listContent() {
   });
 }
 
-export function getContentComposeTime(contentId) {
-  return 2000;
+export function getContentComposeTime(key) {
+  const { props, type } = contentStore[key];
+
+  switch (type) {
+    default:
+      return 2000;
+  }
 }
