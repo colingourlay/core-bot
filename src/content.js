@@ -22,6 +22,8 @@ const TWEMOJI_PARSING_OPTIONS = {
   ext: '.svg'
 };
 const GEMOJI_PATTERN = /:[\w_]+:/g;
+const ONE_MINUTE = 1000 * 60;
+const CHARS_TYPED_PER_MINUTE = 375;
 
 const CONTENT_TYPES = {
   CAPI_UNRESOLVED: 1,
@@ -245,10 +247,12 @@ export function listContent() {
   });
 }
 
-export function getContentComposeTime(key) {
-  const { props, type } = contentStore[key];
+export function getContentComposeTime(id) {
+  const { props, type } = contentStore[id];
 
   switch (type) {
+    case CONTENT_TYPES.RICHTEXT:
+      return (getContentText(id).length / CHARS_TYPED_PER_MINUTE) * ONE_MINUTE;
     default:
       return 2000;
   }

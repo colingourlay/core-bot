@@ -1,7 +1,7 @@
 import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
 import { name } from '../../package';
 import { IS_DEBUG } from '../constants';
-import { getContentText, listContent, parseContent, preloadEmoji } from '../content';
+import { listContent, parseContent, preloadEmoji } from '../content';
 
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
