@@ -244,3 +244,7 @@ export function listContent() {
     };
   });
 }
+
+export function getContentComposeTime(contentId) {
+  return 2000;
+}

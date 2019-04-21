@@ -2,6 +2,7 @@ import React from 'react';
 import Sequenza from 'sequenza';
 import Visibility from 'visibilityjs';
 import { track } from './utils/behaviour';
+import { getContentComposeTime } from './content';
 
 export const Context = React.createContext({});
 
@@ -59,7 +60,7 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
     });
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: note }),
-      delay: 2000
+      delay: getContentComposeTime(note.contentId)
     });
   });
   sequenza.queue({
