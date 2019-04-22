@@ -28,9 +28,10 @@ export const ACTION_TYPES = {
   HOST_START: 5,
   UPDATE_PROMPTS: 6,
   CHOOSE_PROMPT: 7,
-  EXIT_LINK: 8,
-  WINDOW_UNLOAD: 9,
-  OPEN_DEBUG_DIALOG: 10
+  END_CONVERSATION: 8,
+  EXIT_LINK: 9,
+  WINDOW_UNLOAD: 10,
+  OPEN_DEBUG_DIALOG: 11
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
@@ -68,9 +69,15 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
     nextReadDelay = getContentReadingTime(note.contentId);
   });
   sequenza.queue({
-    callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: guestPrompts }),
+    callback: () =>
+      dispatch(
+        guestPrompts.length
+          ? { type: ACTION_TYPES.UPDATE_PROMPTS, data: guestPrompts }
+          : { type: ACTION_TYPES.END_CONVERSATION }
+      ),
     delay: nextReadDelay
   });
+
   sequenza.start();
 }
 
@@ -134,6 +141,8 @@ function reducer(state, action) {
       track(state.id, 'prompt-target', targetNodeId);
 
       return { ...state, prompts: [], history: state.history.concat([{ contentId, isGuest: true, box, parentBox }]) };
+    case ACTION_TYPES.END_CONVERSATION:
+      return { ...state, hasEnded: true };
     case ACTION_TYPES.EXIT_LINK:
       track(state.id, 'exit-link', action.data);
 

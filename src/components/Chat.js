@@ -5,6 +5,7 @@ import { useStyle } from 'styled-hooks';
 import { useContext, ACTION_TYPES } from '../state';
 import Bubble from './Bubble';
 import Prompts from './Prompts';
+import Status from './Status';
 
 const IS_SMOOTH_SCROLL_SUPPORTED = 'scrollBehavior' in document.documentElement.style;
 const SCROLL_INTO_VIEW_ARG = IS_SMOOTH_SCROLL_SUPPORTED
@@ -14,6 +15,7 @@ const NON_ALPHA_PATTERN = /[\W]+/g;
 
 export default function Chat() {
   const { state, dispatch } = useContext();
+  const { hasEnded, history, isHostComposing, prompts } = state;
   const ref = useRef();
   const bottomRef = useRef();
   const className = useStyle`
@@ -51,7 +53,7 @@ export default function Chat() {
       disableBodyScroll(ref.current);
     }
 
-    if (!state.history.length) {
+    if (!history.length) {
       dispatch({ type: ACTION_TYPES.HOST_START, data: { dispatch } });
     }
 
@@ -76,7 +78,7 @@ export default function Chat() {
         validTarget: target => target === ref.current
       });
     });
-  }, [state.history.length, state.prompts.length, state.isHostComposing]);
+  }, [history.length, prompts.length, isHostComposing, hasEnded]);
 
   function onPotentialExitLink(event) {
     function traverse(node) {
@@ -112,10 +114,11 @@ export default function Chat() {
       data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Chat'}
     >
       <ul className={bubblesClassName} role="log" aria-live="polite" aria-label="Chat Log" aria-atomic="false">
-        {state.history.map((props, index) => (
-          <Bubble key={index} isLast={index + 1 === state.history.length && state.prompts.length === 0} {...props} />
+        {history.map((props, index) => (
+          <Bubble key={index} isLast={index + 1 === history.length && prompts.length === 0} {...props} />
         ))}
-        {state.isHostComposing && <Bubble key={'composing'} isComposer={true} />}
+        {isHostComposing && <Bubble key={'composing'} isComposer={true} />}
+        {hasEnded && <Status text="The chat has ended" />}
       </ul>
       <Prompts />
       <div ref={bottomRef} className={bottomClassName} />
