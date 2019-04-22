@@ -35,7 +35,7 @@ export default function Bubble({
 
     &[data-is-host] {
       &[data-is-last] {
-        animation: enterHost 0.5s ${CUBIC_BEZIER_EASING} forwards;
+        animation: enterHost 0.75s ${CUBIC_BEZIER_EASING} forwards;
       }
 
       &::before {
