@@ -7,7 +7,8 @@ import { useContext, ACTION_TYPES } from '../state';
 export default function Prompts() {
   const { state, dispatch } = useContext();
   const [chosenIndex, setChosenIndex] = useState(null);
-  const { prompts } = state;
+  const { history, prompts } = state;
+  const seenContentIds = history.map(x => x.contentId);
 
   const ref = useRef();
   const className = useStyle`
@@ -56,6 +57,10 @@ export default function Prompts() {
     text-align: left;
     cursor: pointer;
     transition: opacity 0.125s, background-color 0.125s;
+
+    &[data-was-previously-chosen] {
+      opacity: 0.2;
+    }
 
     [data-has-chosen] &:not([data-is-chosen]) {
       opacity: 0;
@@ -115,6 +120,7 @@ export default function Prompts() {
               <button
                 className={promptClassName}
                 role="menuitem"
+                data-was-previously-chosen={seenContentIds.indexOf(contentId) > -1 ? '' : null}
                 data-is-chosen={chosenIndex === index ? '' : null}
                 onClick={choosePrompt}
               >
