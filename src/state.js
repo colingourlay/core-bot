@@ -2,7 +2,7 @@ import React from 'react';
 import Sequenza from 'sequenza';
 import Visibility from 'visibilityjs';
 import { track } from './utils/behaviour';
-import { getContentComposeTime } from './content';
+import { getContentReadingTime } from './content';
 
 export const Context = React.createContext({});
 
@@ -52,20 +52,24 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
   const hostMessages = getHostMessages(nodeId, graph);
   const guestPrompts = getGuestPrompts(nodeId, graph);
   const sequenza = new Sequenza();
+  let nextReadDelay = 1500;
 
   hostMessages.forEach((note, index) => {
+    const totalMessageDelay = nextReadDelay + 1500;
+
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
-      delay: index ? 750 : 1250
+      delay: totalMessageDelay / 3
     });
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: note }),
-      delay: getContentComposeTime(note.contentId)
+      delay: (totalMessageDelay / 3) * 2
     });
+    nextReadDelay = getContentReadingTime(note.contentId);
   });
   sequenza.queue({
     callback: () => dispatch({ type: ACTION_TYPES.UPDATE_PROMPTS, data: guestPrompts }),
-    delay: 1750
+    delay: nextReadDelay
   });
   sequenza.start();
 }
@@ -107,21 +111,25 @@ function reducer(state, action) {
     case ACTION_TYPES.HOST_START:
       const entryNode = state.graph.nodes[0];
       const entryEdge = state.graph.edges.find(({ to }) => to === entryNode.id);
+      const entryContentId = entryEdge ? entryEdge.content : state.titleContentId;
 
-      scheduleHostActivity(entryNode.id, state.graph, action.data.dispatch);
+      setTimeout(() => {
+        scheduleHostActivity(entryNode.id, state.graph, action.data.dispatch);
+      }, getContentReadingTime(entryContentId));
 
       return {
         ...state,
-        history: state.history.concat([
-          { contentId: entryEdge ? entryEdge.content : state.titleContentId, isGuest: true }
-        ])
+        history: state.history.concat([{ contentId: entryContentId, isGuest: true }])
       };
     case ACTION_TYPES.UPDATE_PROMPTS:
       return { ...state, prompts: action.data };
     case ACTION_TYPES.CHOOSE_PROMPT:
       const { contentId, targetNodeId, markup, box, parentBox, dispatch } = action.data;
 
-      scheduleHostActivity(targetNodeId, state.graph, dispatch);
+      setTimeout(() => {
+        scheduleHostActivity(targetNodeId, state.graph, dispatch);
+      }, getContentReadingTime(contentId));
+
       session.prompts++;
       track(state.id, 'prompt-target', targetNodeId);
 

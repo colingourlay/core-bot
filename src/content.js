@@ -23,7 +23,7 @@ const TWEMOJI_PARSING_OPTIONS = {
 };
 const GEMOJI_PATTERN = /:[\w_]+:/g;
 const ONE_MINUTE = 1000 * 60;
-const CHARS_TYPED_PER_MINUTE = 375;
+const CHARACTERS_READ_PER_MINUTE = 1250; // ~250 words per minute
 
 const CONTENT_TYPES = {
   CAPI_UNRESOLVED: 1,
@@ -247,13 +247,13 @@ export function listContent() {
   });
 }
 
-export function getContentComposeTime(id) {
+export function getContentReadingTime(id) {
   const { props, type } = contentStore[id];
 
   switch (type) {
     case CONTENT_TYPES.RICHTEXT:
-      return (getContentText(id).length / CHARS_TYPED_PER_MINUTE) * ONE_MINUTE;
+      return (getContentText(id).length / CHARACTERS_READ_PER_MINUTE) * ONE_MINUTE;
     default:
-      return 2000;
+      return 3000;
   }
 }
