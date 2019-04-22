@@ -59,7 +59,8 @@ export default function Prompts() {
     transition: opacity 0.125s, background-color 0.125s;
 
     &[data-was-previously-chosen] {
-      opacity: 0.2;
+      opacity: 0.25;
+      background-color: #144f66;
     }
 
     [data-has-chosen] &:not([data-is-chosen]) {
