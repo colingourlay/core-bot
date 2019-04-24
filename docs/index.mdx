@@ -1,0 +1,93 @@
+import '../src/global.css.js';
+import Bubble from '../src/components/Bubble';
+import Card from '../src/components/Card';
+import Chat from '../src/components/Chat';
+import Ellipsis from '../src/components/Ellipsis';
+import Power from '../src/components/Power';
+import Prompts from '../src/components/Prompts';
+import Sandbox from './Sandbox';
+
+# Card
+
+<Sandbox name="Card">
+  <div data-x>
+    <a name="corebot" data-x>
+      <Card />
+    </a>
+    <p data-x>
+      The card on the right will float in the document, containing the bot name and a call to action. Tapping the button
+      will launch the bot.
+    </p>
+  </div>
+</Sandbox>
+
+# Power
+
+## On
+
+<Sandbox isFixedTrap name="Power/On">
+  <Power isOn />
+</Sandbox>
+
+## Off
+
+<Sandbox isFixedTrap name="Power/Off">
+  <Power />
+</Sandbox>
+
+## Off (resumable)
+
+<Sandbox isFixedTrap name="Power/Off/Resumable" history={[{ contentId: 1, isGuest: true }, { contentId: 2 }]}>
+  <Power />
+</Sandbox>
+
+# Bubble
+
+## Guest
+
+<Sandbox isInsideDialog name="Bubble/Guest">
+  <Bubble isGuest contentId={1} />
+</Sandbox>
+
+## Host
+
+<Sandbox isInsideDialog name="Bubble/Host">
+  <Bubble contentId={2} />
+</Sandbox>
+
+## Host Composer
+
+<Sandbox isInsideDialog name="Bubble/Host/Composer">
+  <Bubble isComposer />
+</Sandbox>
+
+# Prompts
+
+## Single
+
+<Sandbox isInsideDialog name="Prompts/Single" prompts={[{ contentId: 4 }]}>
+  <Prompts />
+</Sandbox>
+
+## Multiple
+
+<Sandbox isInsideDialog name="Prompts/Multiple" prompts={[{ contentId: 4 }, { contentId: 14 }]}>
+  <Prompts />
+</Sandbox>
+
+# Chat
+
+<Sandbox
+  isInsideDialog
+  name="Chat"
+  history={[{ contentId: 1, isGuest: true }, { contentId: 2 }, { contentId: 3 }]}
+  prompts={[{ contentId: 4 }, { contentId: 14 }]}
+>
+  <Chat />
+</Sandbox>
+
+# Ellipsis
+
+<Sandbox name="Ellipsis">
+  <Ellipsis />
+</Sandbox>

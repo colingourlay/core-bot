@@ -68,7 +68,7 @@ export default function Card({ text, icon, action }) {
   `;
 
   return (
-    <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Card'}>
+    <div className={className}>
       <div className={innerClassName}>
         <h3>{widont(state.title)}</h3>
         <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>

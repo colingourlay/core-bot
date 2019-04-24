@@ -15,7 +15,7 @@ const NON_ALPHA_PATTERN = /[\W]+/g;
 
 export default function Chat() {
   const { state, dispatch } = useContext();
-  const { hasEnded, history, isHostComposing, prompts } = state;
+  const { hasEnded, history, isHostComposing, prompts, isStatic } = state;
   const ref = useRef();
   const bottomRef = useRef();
   const className = useStyle`
@@ -44,6 +44,10 @@ export default function Chat() {
   `;
 
   useLayoutEffect(() => {
+    if (isStatic) {
+      return;
+    }
+
     if (ref.current) {
       // Pad enough to allow the initial bubble to be scrolled to the bottom of the chat
       ref.current.style.paddingTop = `${ref.current.parentElement.offsetHeight - 75}px`;
@@ -64,6 +68,10 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
+    if (isStatic) {
+      return;
+    }
+
     // Scroll to the bottom when content is added, but only if the
     // visitor isn't currenlty scrolling (including flick inertia)
     const initialScrollTop = ref.current.scrollTop;
@@ -81,6 +89,10 @@ export default function Chat() {
   }, [history.length, prompts.length, isHostComposing, hasEnded]);
 
   function onPotentialExitLink(event) {
+    if (isStatic) {
+      return;
+    }
+
     function traverse(node) {
       if (!node || node === ref.current) {
         return;
@@ -107,12 +119,7 @@ export default function Chat() {
   }
 
   return (
-    <div
-      ref={ref}
-      className={className}
-      onClick={onPotentialExitLink}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Chat'}
-    >
+    <div ref={ref} className={className} onClick={onPotentialExitLink}>
       <ul className={bubblesClassName} role="log" aria-live="polite" aria-label="Chat Log" aria-atomic="false">
         {history.map((props, index) => (
           <Bubble key={index} isLast={index + 1 === history.length && prompts.length === 0} {...props} />

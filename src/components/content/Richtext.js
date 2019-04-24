@@ -56,11 +56,5 @@ export default function Richtext({ markup }) {
     }
   `;
 
-  return (
-    <div
-      className={className}
-      dangerouslySetInnerHTML={{ __html: markup }}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Richtext'}
-    />
-  );
+  return <div className={className} dangerouslySetInnerHTML={{ __html: markup }} />;
 }

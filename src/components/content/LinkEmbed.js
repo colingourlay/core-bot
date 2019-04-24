@@ -38,7 +38,7 @@ export default function LinkEmbed({ url, title, imageSrc, imageAspectRatio }) {
   const linkText = title || `${_url.hostname}${_url.pathname === '/' ? '' : _url.pathname}`;
 
   return (
-    <a className={className} href={url} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'LinkEmbed'}>
+    <a className={className} href={url}>
       {imageSrc && <ImageEmbed src={imageSrc} aspectRatio={imageAspectRatio || DEFAULT_IMAGE_ASPECT_RATIO} />}
       <div className={textClassName}>
         <h3>{linkText}</h3>

@@ -15,7 +15,7 @@ export default function Status({ text }) {
     background-image: none;
     color: #144f66;
     list-style: none;
-    animation: enterStatus 0.5s ${CUBIC_BEZIER_EASING} forwards;
+    animation: ${isStatic ? 'none' : `enterStatus 0.5s ${CUBIC_BEZIER_EASING} forwards`};
 
     &::before,
     &::after {
@@ -50,7 +50,7 @@ export default function Status({ text }) {
   `;
 
   return (
-    <li className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Status'}>
+    <li className={className}>
       <div>{text}</div>
     </li>
   );

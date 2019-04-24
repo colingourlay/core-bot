@@ -24,3 +24,7 @@ __corebot__ = {
     <p>This is Answer B</p> \
   '
 };
+
+try {
+  module.exports = __corebot__;
+} catch (e) {}

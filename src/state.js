@@ -163,11 +163,11 @@ function reducer(state, action) {
 
 function getInitialState(props) {
   return {
-    ...props,
     history: [],
     isDialogOpen: false,
     isDebugDialogOpen: false,
-    prompts: []
+    prompts: [],
+    ...props
   };
 }
 

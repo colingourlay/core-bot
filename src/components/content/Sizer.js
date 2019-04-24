@@ -10,5 +10,5 @@ export default function Sizer({ aspectRatio }) {
     background-color: #ccc;
   `;
 
-  return <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Sizer'} />;
+  return <div className={className} />;
 }

@@ -18,6 +18,7 @@ export default function Bubble({
   ...props
 }) {
   const { state } = useContext();
+  const { author, isStatic } = state;
   const className = useStyle`
     transform-origin: top right;
     position: relative;
@@ -35,11 +36,11 @@ export default function Bubble({
 
     &[data-is-host] {
       &[data-is-last] {
-        animation: enterHost 0.75s ${CUBIC_BEZIER_EASING} forwards;
+        animation: ${isStatic ? 'none' : `enterHost 0.75s ${CUBIC_BEZIER_EASING} forwards`};
       }
 
       &::before {
-        content: ${`'${state.author || DEFAULTS.AUTHOR}'`};
+        content: ${`'${author || DEFAULTS.AUTHOR}'`};
         position: absolute;
         top: -20px;
         left: 16px;
@@ -99,6 +100,10 @@ export default function Bubble({
   const ref = useRef();
 
   useLayoutEffect(() => {
+    if (isStatic) {
+      return;
+    }
+
     if (isGuest && isLast && box) {
       const el = ref.current;
       const from = box;
@@ -124,7 +129,6 @@ export default function Bubble({
       data-is-guest={isGuest ? '' : null}
       data-is-host={!isGuest ? '' : null}
       data-is-last={isLast || isComposer ? '' : null}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : `Bubble/${isGuest ? 'Guest' : 'Host'}`}
       {...props}
     >
       {isComposer ? <Ellipsis /> : renderContent(contentId)}

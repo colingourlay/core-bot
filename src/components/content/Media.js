@@ -31,7 +31,7 @@ export default function Media({ aspectRatio, children }) {
   `;
 
   return (
-    <div className={className} data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Media'}>
+    <div className={className}>
       <Sizer aspectRatio={aspectRatio} />
       {React.Children.only(children)}
     </div>

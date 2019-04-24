@@ -27,7 +27,6 @@ export default function GIFEmbed({ animatedSrc, stillSrc, videoSrc, alt, attribu
       className={className}
       aria-label={`${isPlaying ? 'Pause' : 'Play'} GIF`}
       onClick={() => setIsPlaying(!isPlaying)}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'GIFEmbed'}
     >
       {videoSrc ? (
         <VideoEmbed

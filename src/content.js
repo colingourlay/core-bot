@@ -47,6 +47,10 @@ const emojiUsed = new Set();
 const contentStore = {};
 let nextId = 0;
 
+export function getAllContent() {
+  return JSON.parse(JSON.stringify(contentStore));
+}
+
 export function parseContent(el) {
   const id = nextId++;
   const content = { type: CONTENT_TYPES.RICHTEXT, props: null };

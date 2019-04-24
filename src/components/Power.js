@@ -15,6 +15,7 @@ let nextId = 0;
 
 export default function Power({ isOn, onClick }) {
   const { state } = useContext();
+  const { cta, history } = state;
   const className = useStyle`
     opacity: ${!isOn && state.isDialogOpen ? 0 : 1};
     z-index: 9999;
@@ -72,19 +73,14 @@ export default function Power({ isOn, onClick }) {
   const id = `${className.replace(' ', '')}${nextId++}`;
 
   return (
-    <button
-      id={id}
-      className={className}
-      onClick={onClick}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : `Power/${isOn ? 'On' : 'Off'}`}
-    >
+    <button id={id} className={className} onClick={onClick}>
       <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" aria-hidden>
         <path d={isOn ? PATHS.ON : PATHS.OFF} />
       </svg>
       {isOn ? (
         <VisuallyHidden>{'Close the ABC News Bot'}</VisuallyHidden>
       ) : (
-        <label htmlFor={id}>{state.history.length > 1 ? DEFAULTS.RESUME_CTA : state.cta || DEFAULTS.START_CTA}</label>
+        <label htmlFor={id}>{history.length > 1 ? DEFAULTS.RESUME_CTA : cta || DEFAULTS.START_CTA}</label>
       )}
     </button>
   );

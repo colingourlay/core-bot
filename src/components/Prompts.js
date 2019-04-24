@@ -7,7 +7,7 @@ import { useContext, ACTION_TYPES } from '../state';
 export default function Prompts() {
   const { state, dispatch } = useContext();
   const [chosenIndex, setChosenIndex] = useState(null);
-  const { history, prompts } = state;
+  const { history, prompts, isStatic } = state;
   const seenContentIds = history.map(x => x.contentId);
 
   const ref = useRef();
@@ -75,20 +75,14 @@ export default function Prompts() {
   const key = prompts.map(({ id }) => id).join('_');
 
   return (
-    <div
-      key={key}
-      ref={ref}
-      className={className}
-      data-has-chosen={chosenIndex !== null ? '' : null}
-      data-sketch-symbol={process.env.NODE_ENV === 'production' ? null : 'Prompts'}
-    >
+    <div key={key} ref={ref} className={className} data-has-chosen={chosenIndex !== null ? '' : null}>
       {prompts.length > 1 && <label role="pesentation">Choose one</label>}
       <ol role="menu" aria-label={prompts.length ? 'Chat Prompts' : null} aria-live="polite" aria-atomic="false">
         {prompts.map(({ contentId, targetNodeId }, index) => {
           let hasChosenPrompt;
 
           function choosePrompt(event) {
-            if (hasChosenPrompt) {
+            if (isStatic || hasChosenPrompt) {
               return;
             }
 
