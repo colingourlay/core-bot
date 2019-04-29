@@ -1,10 +1,13 @@
 import React from 'react';
 import { useStyle } from 'styled-hooks';
 import { DEFAULTS, CUBIC_BEZIER_EASING } from '../constants';
+import { useContext } from '../state';
 
 const TRANSPARENT_BOX_SHADOW = '0 5px 20px 0  rgba(20, 79, 102, 0)';
 
 export default function Status({ text }) {
+  const { state } = useContext();
+  const { isStatic } = state;
   const className = useStyle`
     display: flex;
     justify-content: stretch;
