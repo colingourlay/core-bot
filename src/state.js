@@ -31,7 +31,8 @@ export const ACTION_TYPES = {
   END_CONVERSATION: 8,
   EXIT_LINK: 9,
   WINDOW_UNLOAD: 10,
-  OPEN_DEBUG_DIALOG: 11
+  OPEN_DEBUG_DIALOG: 11,
+  SHOW_POWER_CTA: 12
 };
 
 export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
@@ -156,6 +157,9 @@ function reducer(state, action) {
       return state;
     case ACTION_TYPES.OPEN_DEBUG_DIALOG:
       return { ...state, isDebugDialogOpen: true };
+    case ACTION_TYPES.SHOW_POWER_CTA: {
+      return { ...state, isVisitorBeyondCard: true };
+    }
     default:
       throw new Error('Unrecognised action');
   }
@@ -163,9 +167,11 @@ function reducer(state, action) {
 
 function getInitialState(props) {
   return {
+    hasVisitorSeenCTA: false,
     history: [],
     isDialogOpen: false,
     isDebugDialogOpen: false,
+    isVisitorBeyondCard: false,
     prompts: [],
     ...props
   };

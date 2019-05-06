@@ -15,9 +15,10 @@ let nextId = 0;
 
 export default function Power({ isOn, onClick }) {
   const { state } = useContext();
-  const { cta, history } = state;
+  const { cta, history, isVisitorBeyondCard } = state;
   const className = useStyle`
     opacity: ${!isOn && state.isDialogOpen ? 0 : 1};
+    transform: ${isVisitorBeyondCard ? 'none' : 'translate(0, 100px)'};
     z-index: 9999;
     display: inline-block;
     position: fixed;

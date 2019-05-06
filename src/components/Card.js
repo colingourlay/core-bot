@@ -1,13 +1,15 @@
 import VisuallyHidden from '@reach/visually-hidden';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import { DEFAULTS, IS_DEBUG } from '../constants';
-import { useContext, OPEN_DIALOG_ACTION, OPEN_DEBUG_DIALOG_ACTION } from '../state';
+import { useContext, ACTION_TYPES, OPEN_DIALOG_ACTION, OPEN_DEBUG_DIALOG_ACTION } from '../state';
 import { widont } from '../utils/index';
 import Power from './Power';
 
 export default function Card({ text, icon, action }) {
   const { state, dispatch } = useContext();
+  const { isVisitorBeyondCard } = state;
+  const ref = useRef();
   const className = useStyle`
     position: relative;
     box-sizing: border-box;
@@ -67,8 +69,27 @@ export default function Card({ text, icon, action }) {
     left: 0;
   `;
 
+  useEffect(() => {
+    function onScroll() {
+      if (isVisitorBeyondCard) {
+        return;
+      }
+
+      if (ref.current.getBoundingClientRect().bottom < 0) {
+        window.removeEventListener('scroll', onScroll);
+        dispatch({ type: ACTION_TYPES.SHOW_POWER_CTA });
+      }
+    }
+
+    window.addEventListener('scroll', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, [isVisitorBeyondCard]);
+
   return (
-    <div className={className}>
+    <div ref={ref} className={className}>
       <div className={innerClassName}>
         <h3>{widont(state.title)}</h3>
         <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>
