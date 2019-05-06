@@ -2,7 +2,7 @@ import VisuallyHidden from '@reach/visually-hidden';
 import React from 'react';
 import { useStyle } from 'styled-hooks';
 import { DEFAULTS } from '../constants';
-import { useContext, OPEN_DIALOG_ACTION } from '../state';
+import { useContext } from '../state';
 
 const PATHS = {
   ON:

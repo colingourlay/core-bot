@@ -1,7 +1,9 @@
 import React from 'react';
 import Sequenza from 'sequenza';
 import Visibility from 'visibilityjs';
+import { name } from '../package';
 import { track } from './utils/behaviour';
+import { IS_DEBUG } from './constants';
 import { getContentReadingTime } from './content';
 
 export const Context = React.createContext({});
@@ -21,24 +23,19 @@ export function useContext() {
 }
 
 export const ACTION_TYPES = {
-  OPEN_DIALOG: 1,
-  CLOSE_DIALOG: 2,
-  HOST_COMPOSING: 3,
-  HOST_MESSAGE: 4,
-  HOST_START: 5,
-  UPDATE_PROMPTS: 6,
-  CHOOSE_PROMPT: 7,
-  END_CONVERSATION: 8,
-  EXIT_LINK: 9,
-  WINDOW_UNLOAD: 10,
-  OPEN_DEBUG_DIALOG: 11,
-  SHOW_POWER_CTA: 12
+  WINDOW_UNLOAD: 'WINDOW_UNLOAD',
+  SHOW_POWER_CTA: 'SHOW_POWER_CTA',
+  OPEN_DIALOG: 'OPEN_DIALOG',
+  OPEN_DEBUG_DIALOG: 'OPEN_DEBUG_DIALOG',
+  CLOSE_DIALOG: 'CLOSE_DIALOG',
+  HOST_COMPOSING: 'HOST_COMPOSING',
+  HOST_MESSAGE: 'HOST_MESSAGE',
+  HOST_START: 'HOST_START',
+  UPDATE_PROMPTS: 'UPDATE_PROMPTS',
+  CHOOSE_PROMPT: 'CHOOSE_PROMPT',
+  END_CONVERSATION: 'END_CONVERSATION',
+  EXIT_LINK: 'EXIT_LINK'
 };
-
-export const OPEN_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DIALOG };
-export const CLOSE_DIALOG_ACTION = { type: ACTION_TYPES.CLOSE_DIALOG };
-export const WINDOW_UNLOAD_ACTION = { type: ACTION_TYPES.WINDOW_UNLOAD };
-export const OPEN_DEBUG_DIALOG_ACTION = { type: ACTION_TYPES.OPEN_DEBUG_DIALOG };
 
 function getHostMessages(nodeId, graph) {
   return graph.nodes.find(({ id }) => id === nodeId).contents.map(contentId => ({ contentId }));
@@ -64,7 +61,7 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
       delay: totalMessageDelay / 3
     });
     sequenza.queue({
-      callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, data: note }),
+      callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, payload: note }),
       delay: (totalMessageDelay / 3) * 2
     });
     nextReadDelay = getContentReadingTime(note.contentId);
@@ -73,7 +70,7 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
     callback: () =>
       dispatch(
         guestPrompts.length
-          ? { type: ACTION_TYPES.UPDATE_PROMPTS, data: guestPrompts }
+          ? { type: ACTION_TYPES.UPDATE_PROMPTS, payload: guestPrompts }
           : { type: ACTION_TYPES.END_CONVERSATION }
       ),
     delay: nextReadDelay
@@ -90,7 +87,13 @@ const session = {
 };
 
 function reducer(state, action) {
-  switch (action.type) {
+  const { type, payload } = action;
+
+  if (IS_DEBUG) {
+    console.debug(`[${name}]`, type, payload);
+  }
+
+  switch (type) {
     case ACTION_TYPES.OPEN_DIALOG:
       if (!session.hasStarted) {
         session.hasStarted = true;
@@ -115,14 +118,14 @@ function reducer(state, action) {
 
       return { ...state, isHostComposing: true, history };
     case ACTION_TYPES.HOST_MESSAGE:
-      return { ...state, isHostComposing: false, history: state.history.concat([action.data]) };
+      return { ...state, isHostComposing: false, history: state.history.concat([payload]) };
     case ACTION_TYPES.HOST_START:
       const entryNode = state.graph.nodes[0];
       const entryEdge = state.graph.edges.find(({ to }) => to === entryNode.id);
       const entryContentId = entryEdge ? entryEdge.content : state.titleContentId;
 
       setTimeout(() => {
-        scheduleHostActivity(entryNode.id, state.graph, action.data.dispatch);
+        scheduleHostActivity(entryNode.id, state.graph, payload.dispatch);
       }, getContentReadingTime(entryContentId));
 
       return {
@@ -130,9 +133,9 @@ function reducer(state, action) {
         history: state.history.concat([{ contentId: entryContentId, isGuest: true }])
       };
     case ACTION_TYPES.UPDATE_PROMPTS:
-      return { ...state, prompts: action.data };
+      return { ...state, prompts: payload };
     case ACTION_TYPES.CHOOSE_PROMPT:
-      const { contentId, targetNodeId, markup, box, parentBox, dispatch } = action.data;
+      const { contentId, targetNodeId, markup, box, parentBox, dispatch } = payload;
 
       setTimeout(() => {
         scheduleHostActivity(targetNodeId, state.graph, dispatch);
@@ -145,7 +148,7 @@ function reducer(state, action) {
     case ACTION_TYPES.END_CONVERSATION:
       return { ...state, hasEnded: true };
     case ACTION_TYPES.EXIT_LINK:
-      track(state.id, 'exit-link', action.data);
+      track(state.id, 'exit-link', payload);
 
       return state;
     case ACTION_TYPES.WINDOW_UNLOAD:

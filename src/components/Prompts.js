@@ -93,7 +93,7 @@ export default function Prompts() {
             const parentBox = ref.current.getBoundingClientRect();
             const action = {
               type: ACTION_TYPES.CHOOSE_PROMPT,
-              data: {
+              payload: {
                 contentId,
                 targetNodeId,
                 box,

@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { useStyle } from 'styled-hooks';
-import { Provider, useReducer, OPEN_DIALOG_ACTION, WINDOW_UNLOAD_ACTION } from '../state';
+import { Provider, useReducer, ACTION_TYPES } from '../state';
 import Card from './Card';
 import Chat from './Chat';
 import Dialog from './Dialog';
@@ -14,7 +14,7 @@ export default function App(props) {
 
   useEffect(() => {
     function onUnload() {
-      dispatch(WINDOW_UNLOAD_ACTION);
+      dispatch({ type: ACTION_TYPES.WINDOW_UNLOAD });
     }
 
     window.addEventListener('unload', onUnload);
@@ -28,7 +28,7 @@ export default function App(props) {
     <Provider state={state} dispatch={dispatch}>
       <div>
         <Card />
-        <Power onClick={() => dispatch(OPEN_DIALOG_ACTION)} />
+        <Power onClick={() => dispatch({ type: ACTION_TYPES.OPEN_DIALOG })} />
         {state.isDialogOpen && (
           <Dialog>
             <Chat />

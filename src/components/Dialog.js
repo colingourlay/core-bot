@@ -2,7 +2,7 @@ import { DialogOverlay, DialogContent } from '@reach/dialog';
 import React from 'react';
 import { useStyle } from 'styled-hooks';
 import { CUBIC_BEZIER_EASING } from '../constants';
-import { useContext, CLOSE_DIALOG_ACTION } from '../state';
+import { useContext, ACTION_TYPES } from '../state';
 import { useViewportHeight } from '../utils/hooks';
 import Power from './Power';
 
@@ -95,9 +95,13 @@ export default function Dialog({ children, isDebug }) {
     }
   `;
 
+  function close() {
+    dispatch({ type: ACTION_TYPES.CLOSE_DIALOG });
+  }
+
   return (
-    <DialogOverlay className={overlayClassName} onDismiss={() => dispatch(CLOSE_DIALOG_ACTION)}>
-      <Power isOn onClick={() => dispatch(CLOSE_DIALOG_ACTION)} />
+    <DialogOverlay className={overlayClassName} onDismiss={close}>
+      <Power isOn onClick={close} />
       <DialogContent className={`${contentClassName}${isDebug ? ` ${debugContentClassName}` : ''}`}>
         {React.Children.only(children)}
       </DialogContent>

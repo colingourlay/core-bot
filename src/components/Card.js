@@ -2,7 +2,7 @@ import VisuallyHidden from '@reach/visually-hidden';
 import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
 import { DEFAULTS, IS_DEBUG } from '../constants';
-import { useContext, ACTION_TYPES, OPEN_DIALOG_ACTION, OPEN_DEBUG_DIALOG_ACTION } from '../state';
+import { useContext, ACTION_TYPES } from '../state';
 import { widont } from '../utils/index';
 import Power from './Power';
 
@@ -92,7 +92,7 @@ export default function Card({ text, icon, action }) {
     <div ref={ref} className={className}>
       <div className={innerClassName}>
         <h3>{widont(state.title)}</h3>
-        <button onClick={() => dispatch(OPEN_DIALOG_ACTION)}>
+        <button onClick={() => dispatch({ type: ACTION_TYPES.OPEN_DIALOG })}>
           {widont(state.cta || DEFAULTS.START_CTA)}
           <VisuallyHidden>{`: ${state.title}`}</VisuallyHidden>
         </button>
@@ -103,7 +103,7 @@ export default function Card({ text, icon, action }) {
         width="30"
         height="29"
         aria-hidden
-        onClick={IS_DEBUG ? () => dispatch(OPEN_DEBUG_DIALOG_ACTION) : null}
+        onClick={IS_DEBUG ? () => dispatch({ type: ACTION_TYPES.OPEN_DEBUG_DIALOG }) : null}
       >
         <path d="M30 18v11l-9-9H5a5 5 0 0 1-5-5V2a2 2 0 0 1 2-2h26a2 2 0 0 1 2 2v16z" />
       </svg>

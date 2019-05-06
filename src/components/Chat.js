@@ -58,7 +58,7 @@ export default function Chat() {
     }
 
     if (!history.length) {
-      dispatch({ type: ACTION_TYPES.HOST_START, data: { dispatch } });
+      dispatch({ type: ACTION_TYPES.HOST_START, payload: { dispatch } });
     }
 
     return () => {
@@ -114,7 +114,7 @@ export default function Chat() {
     const url = linkEl.getAttribute('href');
 
     if (url) {
-      dispatch({ type: ACTION_TYPES.EXIT_LINK, data: url.replace(NON_ALPHA_PATTERN, '-') });
+      dispatch({ type: ACTION_TYPES.EXIT_LINK, payload: url.replace(NON_ALPHA_PATTERN, '-') });
     }
   }
 
