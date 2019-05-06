@@ -70,21 +70,22 @@ export default function Card({ text, icon, action }) {
   `;
 
   useEffect(() => {
-    function onScroll() {
+    function checkVisitorProgress() {
       if (isVisitorBeyondCard) {
         return;
       }
 
       if (ref.current.getBoundingClientRect().bottom < 0) {
-        window.removeEventListener('scroll', onScroll);
+        window.removeEventListener('scroll', checkVisitorProgress);
         dispatch({ type: ACTION_TYPES.SHOW_POWER_CTA });
       }
     }
 
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener('scroll', checkVisitorProgress);
+    checkVisitorProgress();
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', checkVisitorProgress);
     };
   }, [isVisitorBeyondCard]);
 
