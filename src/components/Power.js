@@ -18,7 +18,7 @@ export default function Power({ isOn, onClick }) {
   const { cta, history, isVisitorBeyondCard } = state;
   const className = useStyle`
     opacity: ${!isOn && state.isDialogOpen ? 0 : 1};
-    transform: ${isVisitorBeyondCard ? 'none' : 'translate(0, 100px)'};
+    transform: ${isVisitorBeyondCard || history.length > 0 ? 'none' : 'translate(0, 100px)'};
     z-index: 9999;
     display: inline-block;
     position: fixed;
