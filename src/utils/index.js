@@ -6,6 +6,8 @@ import { listContent, parseContent, preloadEmoji } from '../content';
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
 const THEN_PROPS = ['then', 'and', 'or'];
+const MARKER_PATTERN = /^#\w+$/;
+const MARKER_ID_AND_PROPS_STRING_PATTERN = /([a-z][a-z0-9]*)([A-Z].*)?/;
 const URL_CMID_PATTERN = /\/([0-9]+)(\/|([\?\#].*)?$|-[0-9]+x[0-9]+-)/;
 
 function validateGraph(graph) {
@@ -72,17 +74,21 @@ function getPropsIds(propNames, stringProps) {
   }, []);
 }
 
-function createGraph(markup) {
+function isMarker(el) {
+  return el.tagName === 'P' && el.textContent.match(MARKER_PATTERN);
+}
+
+function createGraph(html) {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(markup, 'text/html');
+  const doc = parser.parseFromString(html, 'text/html');
   const sections = [];
   let currentSection = [];
   const nodes = [];
   const edges = [];
 
-  Array.from(doc.body.children).forEach(el => {
-    if (el.tagName === 'A' && el.hasAttribute('name')) {
-      const [, id, propsString] = el.getAttribute('name').match(/([a-z][a-z0-9]*)([A-Z].*)?/) || [];
+  Array.from(doc.body.firstChild.children).forEach(el => {
+    if (isMarker(el)) {
+      const [, id, propsString] = el.textContent.match(MARKER_ID_AND_PROPS_STRING_PATTERN) || [];
 
       if (!id) {
         return;
@@ -147,6 +153,34 @@ function createGraph(markup) {
   };
 }
 
+function childAttributes(child) {
+  if (!child.parameters) {
+    return '';
+  }
+
+  return Object.keys(child.parameters).reduce((memo, key) => `${memo} ${key}="${child.parameters[key]}"`, '');
+}
+
+// TODO: element attributes
+function childToHTML(child) {
+  return child.type === 'text'
+    ? child.content
+    : child.children
+    ? `<${child.tagname}${childAttributes(child)}>${child.children.reduce(
+        (memo, child) => `${memo}${childToHTML(child)}`,
+        ''
+      )}</${child.tagname}>`
+    : `<${child.tagname}${childAttributes(child)} />`;
+}
+
+function childToText(child) {
+  return child.type === 'text'
+    ? child.content
+    : child.children
+    ? `${child.children.reduce((memo, child) => `${memo}${childToText(child)}`, '')}`
+    : '';
+}
+
 export function articleDocumentToAppProps(doc) {
   if (!doc.text) {
     throw new Error(`Document has no text`);
@@ -154,11 +188,11 @@ export function articleDocumentToAppProps(doc) {
 
   const id = doc.id;
   const title = doc.title;
-  const author = (doc.bylinePlain || '').trim();
-  const cta = (x => (x.indexOf('#') === 0 ? null : x.trim()))(doc.teaserTextPlain || '');
+  const author = doc.byLine ? childToText(doc.byLine) : '';
+  const cta = (x => (x.indexOf('#') === 0 ? null : x.trim()))(doc.synopsis || '');
   const titleContentSourceEl = document.createElement('p');
   const titleContentId = parseContent(((titleContentSourceEl.textContent = title), titleContentSourceEl));
-  const graph = createGraph(doc.text);
+  const graph = createGraph(childToHTML(doc.text));
 
   if (IS_DEBUG) {
     console.groupCollapsed(`[${name}] Graph`);

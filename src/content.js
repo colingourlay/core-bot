@@ -1,4 +1,4 @@
-import capiFetch from '@abcnews/capi-fetch';
+import terminusFetch from '@abcnews/terminus-fetch';
 import { name as gemoji } from 'gemoji';
 import React from 'react';
 import twemoji from 'twemoji';
@@ -26,7 +26,7 @@ const ONE_MINUTE = 1000 * 60;
 const CHARACTERS_READ_PER_MINUTE = 1250; // ~250 words per minute
 
 const CONTENT_TYPES = {
-  CAPI_UNRESOLVED: 1,
+  TERMINUS_UNRESOLVED: 1,
   GIF_EMBED: 2,
   IMAGE_EMBED: 3,
   LINK_EMBED: 4,
@@ -59,14 +59,7 @@ export function parseContent(el) {
   const soleLinkHref = soleLinkEl && soleLinkEl.getAttribute('href');
 
   if (soleLinkEl) {
-    if (soleLinkEl.target === '_self') {
-      content.type = CONTENT_TYPES.CAPI_UNRESOLVED;
-      content.props = {
-        cmid: urlToCMID(soleLinkEl.href),
-        markup: el.innerHTML
-      };
-      resolveUsingCAPI(content);
-    } else if (soleLinkHref.match(GIF_URL_PATTERNS.GFYCAT) || soleLinkHref.match(GIF_URL_PATTERNS.GIPHY)) {
+    if (soleLinkHref.match(GIF_URL_PATTERNS.GFYCAT) || soleLinkHref.match(GIF_URL_PATTERNS.GIPHY)) {
       content.type = CONTENT_TYPES.GIF_EMBED;
       content.props = {
         url: soleLinkHref
@@ -78,6 +71,13 @@ export function parseContent(el) {
         url: soleLinkHref
       };
     }
+  } else if (el.tagName === 'A' && el.hasAttribute('ref')) {
+    content.type = CONTENT_TYPES.TERMINUS_UNRESOLVED;
+    content.props = {
+      cmid: el.getAttribute('ref'),
+      markup: el.innerHTML
+    };
+    resolveUsingTerminus(content);
   } else {
     smartquotes(el);
     content.props = { originalMarkup: el.innerHTML, markup: formatEmoji(replaceGemoji(el.innerHTML)) };
@@ -88,17 +88,20 @@ export function parseContent(el) {
   return id;
 }
 
-function resolveUsingCAPI(content) {
-  capiFetch(content.props.cmid, (err, doc) => {
+function resolveUsingTerminus(content) {
+  terminusFetch(content.props.cmid, (err, doc) => {
     if (err) {
       return console.error(new Error(`Could not fetch document with CMID: ${content.props.cmid}`));
     }
+
     switch (doc.docType) {
       case 'Article':
-        const thumbnailRendition = doc.thumbnailLink ? pickRendition(doc.thumbnailLink.media) : null;
+        const thumbnailRendition = doc._embedded.mediaThumbnail
+          ? pickRendition(doc._embedded.mediaThumbnail.complete)
+          : null;
 
         content.props = {
-          url: doc.canonicalUrl,
+          url: doc.canonicalURL,
           title: doc.title,
           imageSrc: thumbnailRendition ? thumbnailRendition.url : null,
           imageAspectRatio: thumbnailRendition ? thumbnailRendition.height / thumbnailRendition.width : null
@@ -108,24 +111,27 @@ function resolveUsingCAPI(content) {
       case 'Image':
       case 'ImageProxy':
       case 'CustomImage':
-        const imageRendition = pickRendition(doc.media);
+        const imageRendition = pickRendition(doc.media.image.primary.complete);
 
         content.props = {
           src: imageRendition.url,
-          alt: doc.alt || doc.title,
-          attribution: doc.bylinePlain,
+          alt: doc.caption || doc.alt || doc.title,
+          attribution: doc.attribution,
           aspectRatio: imageRendition.height / imageRendition.width
         };
         content.type = CONTENT_TYPES.IMAGE_EMBED;
         break;
       case 'Video':
-        const videoRendition = pickRendition(doc.renditions);
+        const videoRendition = pickRendition(doc.media.video.renditions.files);
+        const posterSrc = doc._embedded.mediaRelated
+          ? pickRendition(doc._embedded.mediaRelated[0].media.image.primary.complete).url
+          : null;
 
         content.props = {
           videoSrc: videoRendition.url,
-          posterSrc: doc.thumbnailLink ? doc.thumbnailLink.media[0].url : null,
-          alt: doc.alt || doc.title,
-          attribution: doc.bylinePlain,
+          posterSrc,
+          alt: doc.caption || doc.title,
+          attribution: (doc.rightsHolder[0] || '').replace('Unspecified', ''),
           aspectRatio: videoRendition.height / videoRendition.width
         };
         content.type = CONTENT_TYPES.VIDEO_EMBED;
@@ -240,15 +246,32 @@ function getContentTypeName(type) {
 export function listContent() {
   const typeNames = Object.keys(CONTENT_TYPES);
 
-  return Object.keys(contentStore).map(key => {
+  const lazyContent = [];
+
+  function resolveContent(key) {
     const { props, type } = contentStore[key];
 
     return {
-      id: key,
       props,
       type: getContentTypeName(type)
     };
+  }
+
+  Object.keys(contentStore).map(key => {
+    const { type } = contentStore[key];
+
+    lazyContent[key] = resolveContent(key);
+
+    if (type === CONTENT_TYPES.TERMINUS_UNRESOLVED) {
+      Object.defineProperty(lazyContent, key, {
+        get() {
+          return resolveContent(key);
+        }
+      });
+    }
   });
+
+  return lazyContent;
 }
 
 export function getContentReadingTime(id) {

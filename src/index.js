@@ -1,11 +1,11 @@
-import capiFetch from '@abcnews/capi-fetch';
+import terminusFetch from '@abcnews/terminus-fetch';
 import React from 'react';
 import { render } from 'react-dom';
 import App from './components/App';
 import { articleDocumentToAppProps } from './utils/index';
 import './global.css.js';
 
-let fetch = capiFetch;
+let fetch = terminusFetch;
 
 // DEBUG ONLY
 if (window.__corebot__) {
