@@ -1,8 +1,10 @@
+import { TIERS, getTier } from '@abcnews/env-utils';
+
 const MOCK_ELEMENT = { getAttribute: () => '' };
 
 export const PARENT_ID = (document.querySelector(`meta[name="ContentId"]`) || MOCK_ELEMENT).getAttribute('content');
 
-export const IS_DEBUG = String(window.location.host).indexOf('aus.aunty') > -1;
+export const IS_DEBUG = getTier() === TIERS.PREVIEW;
 
 export const DEFAULTS = {
   AUTHOR: 'ABC News Bot',

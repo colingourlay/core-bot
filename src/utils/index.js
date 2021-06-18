@@ -1,7 +1,9 @@
 import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
-import { name } from '../../package';
+import pkg from '../../package';
 import { IS_DEBUG } from '../constants';
 import { listContent, parseContent, preloadEmoji } from '../content';
+
+const { name } = pkg;
 
 const SP = ' ';
 const NBSP = String.fromCharCode(160);
@@ -192,7 +194,7 @@ export function articleDocumentToAppProps(doc) {
   const cta = (x => (x.indexOf('#') === 0 ? null : x.trim()))(doc.synopsis || '');
   const titleContentSourceEl = document.createElement('p');
   const titleContentId = parseContent(((titleContentSourceEl.textContent = title), titleContentSourceEl));
-  const graph = createGraph(childToHTML(doc.text));
+  const graph = createGraph(childToHTML(doc.text.json));
 
   if (IS_DEBUG) {
     console.groupCollapsed(`[${name}] Graph`);

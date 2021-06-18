@@ -1,9 +1,11 @@
 import { parse } from 'flowchart.js';
 import React, { useEffect, useRef } from 'react';
 import { useStyle } from 'styled-hooks';
-import { name } from '../../package';
+import pkg from '../../package';
 import { useContext } from '../state';
 import { getContentText } from '../content';
+
+const { name } = pkg;
 
 const DIAGRAM_CONFIG = {
   'arrow-end': 'block-wide-long',

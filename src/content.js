@@ -1,4 +1,4 @@
-import terminusFetch from '@abcnews/terminus-fetch';
+import { fetchOne } from '@abcnews/terminus-fetch';
 import { name as gemoji } from 'gemoji';
 import React from 'react';
 import twemoji from 'twemoji';
@@ -89,7 +89,7 @@ export function parseContent(el) {
 }
 
 function resolveUsingTerminus(content) {
-  terminusFetch(content.props.cmid, (err, doc) => {
+  fetchOne(content.props.cmid, (err, doc) => {
     if (err) {
       return console.error(new Error(`Could not fetch document with CMID: ${content.props.cmid}`));
     }

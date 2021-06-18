@@ -46,6 +46,7 @@ injectGlobal`
     font-stretch: normal;
   }
   
+  div[data-mount][id^='corebot']:not(:empty),
   a[name^='corebot']:not(:empty) {
     clear: right;
     float: right;

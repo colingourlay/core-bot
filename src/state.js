@@ -1,10 +1,12 @@
 import React from 'react';
 import Sequenza from 'sequenza';
 import Visibility from 'visibilityjs';
-import { name } from '../package';
+import pkg from '../package';
 import { track } from './utils/behaviour';
 import { IS_DEBUG } from './constants';
 import { getContentReadingTime } from './content';
+
+const { name } = pkg;
 
 export const Context = React.createContext({});
 
