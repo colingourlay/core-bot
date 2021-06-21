@@ -121,7 +121,8 @@ function createGraph(html) {
 
       promptSourceEl.textContent = el.textContent;
       currentSection.prompts.push(parseContent(promptSourceEl));
-    } else {
+    } else if (el.innerHTML !== '<br>') {
+      // ^^^ CM10 has some sneaky `<p><br></p>`s we want to skip
       currentSection.notes.push(parseContent(el.cloneNode(true)));
     }
   });
