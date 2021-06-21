@@ -175,14 +175,6 @@ function childToHTML(child) {
     : `<${child.tagname}${childAttributes(child)} />`;
 }
 
-function childToText(child) {
-  return child.type === 'text'
-    ? child.content
-    : child.children
-    ? `${child.children.reduce((memo, child) => `${memo}${childToText(child)}`, '')}`
-    : '';
-}
-
 export function articleDocumentToAppProps(doc) {
   if (!doc.text) {
     throw new Error(`Document has no text`);
@@ -190,7 +182,7 @@ export function articleDocumentToAppProps(doc) {
 
   const id = doc.id;
   const title = doc.title;
-  const author = doc.byLine ? childToText(doc.byLine) : '';
+  const author = doc.byLine ? doc.byLine.plain : '';
   const cta = (x => (x.indexOf('#') === 0 ? null : x.trim()))(doc.synopsis || '');
   const titleContentSourceEl = document.createElement('p');
   const titleContentId = parseContent(((titleContentSourceEl.textContent = title), titleContentSourceEl));
