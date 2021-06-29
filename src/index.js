@@ -1,3 +1,4 @@
+import { proxy } from '@abcnews/dev-proxy';
 import { whenDOMReady } from '@abcnews/env-utils';
 import { getMountValue, selectMounts } from '@abcnews/mount-utils';
 import { fetchOne } from '@abcnews/terminus-fetch';
