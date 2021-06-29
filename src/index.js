@@ -14,7 +14,7 @@ if (window.__corebot__) {
   fetch = (_, done) => done(null, __corebot__);
 }
 
-whenDOMReady.then(() => {
+Promise.all([proxy('core-bot'), whenDOMReady]).then(() => {
   const [rootEl] = selectMounts('corebot');
 
   if (!rootEl) {
@@ -39,13 +39,13 @@ whenDOMReady.then(() => {
 
   if (footerEl && window.IntersectionObserver) {
     new IntersectionObserver(
-      entries => {
+      (entries) => {
         rootEl.classList[entries[0].isIntersecting ? 'add' : 'remove']('is-over-footer');
       },
       {
         root: null,
         rootMargin: '10%',
-        threshold: 0
+        threshold: 0,
       }
     ).observe(footerEl);
   }
