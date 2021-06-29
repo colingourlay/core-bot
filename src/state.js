@@ -92,7 +92,7 @@ function reducer(state, action) {
   const { type, payload } = action;
 
   if (IS_DEBUG) {
-    console.debug(`[${name}]`, type, payload);
+    console.debug(...[`[${name}]`, type, payload].filter(x => x));
   }
 
   switch (type) {
