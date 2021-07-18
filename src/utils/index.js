@@ -220,9 +220,15 @@ export function articleDocumentToAppProps(doc) {
 
 export function widont(text) {
   const words = text.split(SP);
-  const lastTwoWordsText = words.slice(-2).join(SP);
 
-  return `${words.slice(0, -2).join(SP)} ${lastTwoWordsText.replace(' ', lastTwoWordsText.length > 15 ? SP : NBSP)}`;
+  if (words.length < 3) {
+    return text;
+  }
+
+  const allButLastTwoWords = words.slice(0, -2);
+  const [secondLastWord, lastWord] = words.slice(-2);
+
+  return `${allButLastTwoWords.join(SP)} ${[secondLastWord, lastWord].join(lastWord.length > 6 ? SP : NBSP)}`;
 }
 
 export function urlToCMID(url) {
@@ -230,7 +236,7 @@ export function urlToCMID(url) {
 }
 
 export function pickRendition(renditions) {
-  return (renditions.length === 1
-    ? renditions
-    : renditions.filter(x => (x.ratio ? x.ratio === '3x2' : true) && x.width > 400))[0];
+  return (
+    renditions.length === 1 ? renditions : renditions.filter(x => (x.ratio ? x.ratio === '3x2' : true) && x.width > 400)
+  )[0];
 }
