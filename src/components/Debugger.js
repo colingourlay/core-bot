@@ -34,10 +34,8 @@ const PARALLEL_DIRECTIONS = ['bottom', 'right', 'top', 'left'];
 const RESERVED_TEXT_PATTERN = /=>|->|:>|@>|\|/g;
 const MESSAGE_MAX_LENGTH = 30;
 
-function contentToLabelText(content) {
-  return getContentText(content)
-    .replace(RESERVED_TEXT_PATTERN, '')
-    .trim();
+function contentIdToLabelText(contentId) {
+  return getContentText(contentId).replace(RESERVED_TEXT_PATTERN, '').trim();
 }
 
 export default function Debugger() {
@@ -59,13 +57,12 @@ export default function Debugger() {
     const isEnd = !state.graph.edges.find(edge => edge.from === node.id);
 
     nodes[node.id] = `${isEnd ? 'end' : 'parallel'}: ${node.contents
-      .map(content => {
-        const text = contentToLabelText(content);
+      .map(contentId => {
+        const text = contentIdToLabelText(contentId);
 
         return text.slice(0, MESSAGE_MAX_LENGTH) + (text.length > MESSAGE_MAX_LENGTH ? '…' : '');
       })
       .join('\n')}|host`;
-    // nodes[node.id] = `${isEnd ? 'end' : 'parallel'}: #${node.id}|host`;
   });
 
   const edges = [];
@@ -76,12 +73,13 @@ export default function Debugger() {
   }
 
   state.graph.edges.forEach((edge, index) => {
-    const content = edge.content || state.title;
     const { from, to } = edge;
     const edgeNodeId = `_${to}_${content}`;
 
     if (!nodes[edgeNodeId]) {
-      nodes[edgeNodeId] = `${edge.from ? 'operation' : 'start'}: ${contentToLabelText(content)}|guest`;
+      nodes[edgeNodeId] = `${edge.from ? 'operation' : 'start'}: ${
+        edge.content ? contentIdToLabelText(edge.content) : state.title
+      }|guest`;
       edges.push([edgeNodeId, to]);
     }
 
