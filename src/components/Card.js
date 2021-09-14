@@ -8,27 +8,27 @@ import Power from './Power';
 
 export default function Card({ text, icon, action }) {
   const { state, dispatch } = useContext();
-  const { isVisitorBeyondCard } = state;
+  const { isVisitorBeyondCard, embedAlignment } = state;
   const ref = useRef();
   const className = useStyle`
     position: relative;
     box-sizing: border-box;
     border-radius: 2px;
-    padding: 8px 0 0 5px;
+    padding: ${embedAlignment === 'full' ? '8px 0 0' : '8px 0 0 5px'};
   `;
   const innerClassName = useStyle`
-    padding: 26px 10px 12px;
+    padding: ${embedAlignment === 'full' ? '10px' : '26px'} 10px 12px;
     background-color: #DDE7EB;
 
     @media (min-width: 360px) {
-      padding: 26px 16px 18px;
+      padding: ${embedAlignment === 'full' ? '10px' : '26px'} 16px 18px;
     }
 
     h3 {
-      margin: 0 0 10px !important;
+      margin: ${embedAlignment === 'full' ? '2px 30px 10px 0' : '0 0 10px'} !important;
       color: #144f66;
       font-family: ABCSans;
-      font-size: 16px !important;
+      font-size: ${embedAlignment === 'full' ? '18px' : '16px'} !important;
       font-weight: 600;
       line-height: 1.4;
       letter-spacing: 0.5px;
@@ -50,10 +50,10 @@ export default function Card({ text, icon, action }) {
       box-shadow: 0 4px 10px 0  rgba(20, 79, 102, 0.3);
       color: #fff;
       font-family: ABCSans;
-      font-size: 12px;
+      font-size: ${embedAlignment === 'full' ? '14px' : '12px'};
       font-weight: 400;
       line-height: 1.4;
-      text-align: left;
+      text-align: ${embedAlignment === 'full' ? 'center' : 'left'};
       text-transform: uppercase;
       letter-spacing: 1px;
       cursor: pointer;
@@ -66,7 +66,8 @@ export default function Card({ text, icon, action }) {
   const iconClassName = useStyle`
     position: absolute;
     top: 0;
-    left: 0;
+    right: ${embedAlignment === 'full' ? '8px' : 'auto'};
+    left: ${embedAlignment === 'full' ? 'auto' : '0'};
   `;
 
   useEffect(() => {

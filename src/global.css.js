@@ -54,7 +54,8 @@ injectGlobal`
   }
 
   [data-mount][id^='corebot'][data-embed="full"] {
-    /* anything unique at this level? */
+    margin: 0 auto 1.5rem;
+    max-width: 360px;
   }
 
   [data-mount][id^='corebot'][data-embed="left"],
