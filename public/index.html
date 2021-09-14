@@ -15,8 +15,18 @@
       }
       main {
         display: block;
-        margin: 1rem;
+        margin: auto;
+        padding: 1rem;
         min-height: 2000px;
+        max-width: 700px;
+      }
+      main > p {
+        font-family: ABCSans, sans-serif;
+        clear: both;
+      }
+      main > p > small {
+        font-size: 100%;
+        color: grey;
       }
     </style>
   </head>
@@ -25,7 +35,18 @@
       <nav class="global"></nav>
     </header>
     <main>
-      <a name="corebot10939952"></a>
+      <p>Basic <small>(default: EMBED=right DIALOG=corner)</small></p>
+      <div data-mount id="corebot10939952"></div>
+      <p>EMBED=left <small>(DIALOG=corner)</small></p>
+      <div data-mount id="corebot10939952EMBEDleft"></div>
+      <p>EMBED=full <small>(DIALOG=corner)</small></p>
+      <div data-mount id="corebot10939952EMBEDfull"></div>
+      <p>DIALOG=middle <small>(EMBED=right)</small></p>
+      <div data-mount id="corebot10939952DIALOGmiddle"></div>
+      <p>EMBED=left DIALOG=middle</p>
+      <div data-mount id="corebot10939952EMBEDleftDIALOGmiddle"></div>
+      <p>EMBED=full DIALOG=middle</p>
+      <div data-mount id="corebot10939952EMBEDfullDIALOGmiddle"></div>
     </main>
     <footer>
       <nav class="global"></nav>

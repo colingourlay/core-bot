@@ -1,4 +1,5 @@
-import alternatingCaseToObject from '@abcnews/alternating-case-to-object';
+import acto from '@abcnews/alternating-case-to-object';
+import { getMountValue } from '@abcnews/mount-utils';
 import pkg from '../../package';
 import { IS_DEBUG } from '../constants';
 import { listContent, parseContent, preloadEmoji } from '../content';
@@ -11,6 +12,20 @@ const THEN_PROPS = ['then', 'and', 'or'];
 const MARKER_PATTERN = /^#\w+$/;
 const MARKER_ID_AND_PROPS_STRING_PATTERN = /([a-z][a-z0-9]*)([A-Z].*)?/;
 const URL_CMID_PATTERN = /\/([0-9]+)(\/|([\?\#].*)?$|-[0-9]+x[0-9]+-)/;
+const DEFAULT_CONFIG = {
+  dialog: 'corner', // or 'middle'
+  embed: 'right' // or 'left' or 'full'
+};
+
+export function parseConfigFromMount(el) {
+  const value = getMountValue(el);
+  const [, id] = value.match(/corebot(\d+)?/) || [];
+  return {
+    ...DEFAULT_CONFIG,
+    ...acto(value),
+    id
+  };
+}
 
 function validateGraph(graph) {
   // Log the graph
@@ -106,7 +121,7 @@ function createGraph(html) {
         id,
         notes: [],
         prompts: [],
-        thenIds: getPropsIds(THEN_PROPS, alternatingCaseToObject(propsString || ''))
+        thenIds: getPropsIds(THEN_PROPS, acto(propsString || ''))
       };
 
       return sections.push(currentSection);

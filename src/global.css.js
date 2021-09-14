@@ -46,15 +46,32 @@ injectGlobal`
     font-stretch: normal;
   }
   
-  div[data-mount][id^='corebot']:not(:empty),
-  a[name^='corebot']:not(:empty) {
-    clear: right;
-    float: right;
-    margin: 0 0 16px 16px;
+  [data-mount][id^='corebot']:not(:empty) {
+    clear: both;
+    margin-bottom: 16px;
+    width: 100%;
+    min-width: 150px;
+  }
+
+  [data-mount][id^='corebot'][data-embed="full"] {
+    /* anything unique at this level? */
+  }
+
+  [data-mount][id^='corebot'][data-embed="left"],
+  [data-mount][id^='corebot'][data-embed="right"] {
     width: calc(50% - 8px);
     max-width: 175px;
-    min-width: 150px;
-    color: inherit;
-    text-decoration: none;
-  }  
+  }
+
+  [data-mount][id^='corebot'][data-embed="left"] {
+    clear: left;
+    float: left;
+    margin-right: 16px;
+  }
+
+  [data-mount][id^='corebot'][data-embed="right"] {
+    clear: right;
+    float: right;
+    margin-left: 16px;
+  }
 `;
