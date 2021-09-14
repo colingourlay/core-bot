@@ -28,7 +28,7 @@ export default function App(props) {
     <Provider state={state} dispatch={dispatch}>
       <div>
         <Card />
-        {props.isOnlyInstance && <Power onClick={() => dispatch({ type: ACTION_TYPES.OPEN_DIALOG })} />}
+        {state.isOnlyInstance && <Power onClick={() => dispatch({ type: ACTION_TYPES.OPEN_DIALOG })} />}
         {state.isDialogOpen && (
           <Dialog>
             <Chat />

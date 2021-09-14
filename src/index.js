@@ -25,12 +25,21 @@ Promise.all([proxy('core-bot'), whenDOMReady]).then(() => {
     }
 
     fetch(id)
-      .then(doc => render(<App isOnlyInstance={rootEls.length === 1} {...articleDocumentToAppProps(doc)} />, rootEl))
+      .then(doc =>
+        render(
+          <App
+            dialogPosition={dialog}
+            embedAlignment={embed}
+            isOnlyInstance={rootEls.length === 1}
+            {...articleDocumentToAppProps(doc)}
+          />,
+          rootEl
+        )
+      )
       .catch(err => {
         throw new Error(`Couldn't fetch Core Bot script`);
       });
 
-    rootEl.setAttribute('data-dialog', dialog);
     rootEl.setAttribute('data-embed', embed);
 
     return rootEl;

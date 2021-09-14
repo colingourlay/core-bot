@@ -48,7 +48,22 @@ export default function Dialog({ children, isDebug }) {
     @keyframes enterContent {
       0% {
         opacity: 0;
-        transform: translate(0, 16px);
+        transform: 'translate(0, 16px)';
+
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transforom: none;
+      }
+    }
+
+    @keyframes enterContentPositionRelative {
+      0% {
+        opacity: 0;
+        transform: ${state.dialogPosition === 'middle' ? 'translate(-50%, calc(-50% + 16px))' : 'translate(0, 16px)'};
+
       }
       50% {
         opacity: 1;
@@ -59,13 +74,28 @@ export default function Dialog({ children, isDebug }) {
     }
 
     @media (min-width: 480px) {
-      right: 32px;
+      transform: ${state.dialogPosition === 'middle' ? 'translate(-50%, -50%)' : 'none'};
+      top: ${state.dialogPosition === 'middle' ? 'calc(50% - 68px)' : 'auto'};
+      right: ${state.dialogPosition === 'middle' ? 'auto' : '32px'};
+      bottom: ${state.dialogPosition === 'middle' ? 'auto' : '68px'};
+      left: ${state.dialogPosition === 'middle' ? '50%' : 'auto'};
       max-width: 345px;
+      animation-name: enterContentPositionRelative;
     }
 
-    @media (min-height: 720px) {
-      bottom: 88px;
+    @media (min-width: 720px) {
+      max-width: 480px;
+    }
+
+    @media (min-width: 480px) and (min-height: 720px) {
+      top: ${state.dialogPosition === 'middle' ? 'calc(50% - 88px)' : 'auto'};
+      bottom: ${state.dialogPosition === 'middle' ? 'auto' : '88px'};
+      height: ${viewportHeight - 100}px;
       max-height: 480px;
+    }
+
+    @media (min-width: 720px) and (min-height: 960px) {
+      max-height: 720px;
     }
 
     &::after {
