@@ -53,20 +53,18 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
   const hostMessages = getHostMessages(nodeId, graph);
   const guestPrompts = getGuestPrompts(nodeId, graph);
   const sequenza = new Sequenza();
-  let nextReadDelay = 1500;
+  let readDelay = 2000; // DELAY AFTER RECEIVING PROMPT
 
   hostMessages.forEach((note, index) => {
-    const totalMessageDelay = nextReadDelay + 1500;
-
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_COMPOSING }),
-      delay: totalMessageDelay / 3
+      delay: readDelay / 3
     });
     sequenza.queue({
       callback: () => dispatch({ type: ACTION_TYPES.HOST_MESSAGE, payload: note }),
-      delay: (totalMessageDelay / 3) * 2
+      delay: (readDelay / 3) * 2
     });
-    nextReadDelay = getContentReadingTime(note.contentId);
+    readDelay = getContentReadingTime(note.contentId) + 1500;
   });
   sequenza.queue({
     callback: () =>
@@ -75,7 +73,7 @@ function scheduleHostActivity(nodeId, graph, dispatch) {
           ? { type: ACTION_TYPES.UPDATE_PROMPTS, payload: guestPrompts }
           : { type: ACTION_TYPES.END_CONVERSATION }
       ),
-    delay: nextReadDelay
+    delay: readDelay / 3
   });
 
   sequenza.start();

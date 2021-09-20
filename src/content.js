@@ -289,6 +289,6 @@ export function getContentReadingTime(id) {
     case CONTENT_TYPES.RICHTEXT:
       return (getContentText(id).length / CHARACTERS_READ_PER_MINUTE) * ONE_MINUTE;
     default:
-      return 3000;
+      return 1000;
   }
 }
