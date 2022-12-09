@@ -2,11 +2,13 @@
 /node_modules
 
 # output
-/.build
-/.deploy
+/.aunty
 /.stats
 /sketch
 
 # misc
 .DS_Store
 npm-debug.log
+
+# environment
+/.env
